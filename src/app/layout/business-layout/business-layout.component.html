@@ -1,0 +1,67 @@
+<mat-sidenav-container class="layout-container">
+  <mat-sidenav mode="side" opened fixedInViewport class="sidenav">
+    <div class="sidenav-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div>
+          <div class="brand-title">IA Ventas</div>
+          <div class="brand-subtitle">Mi negocio</div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Menú</div>
+        <mat-nav-list class="nav-list">
+          <a mat-list-item routerLink="/business" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <mat-icon matListItemIcon>home</mat-icon>
+            <span matListItemTitle>Inicio</span>
+          </a>
+          <a mat-list-item routerLink="/business/documents" routerLinkActive="active">
+            <mat-icon matListItemIcon>description</mat-icon>
+            <span matListItemTitle>Documentos</span>
+          </a>
+      <a mat-list-item routerLink="/business/woocommerce" routerLinkActive="active">
+        <mat-icon matListItemIcon>shopping_cart</mat-icon>
+        <span matListItemTitle>WooCommerce</span>
+      </a>
+      <a mat-list-item routerLink="/business/whatsapp" routerLinkActive="active">
+        <mat-icon matListItemIcon>chat</mat-icon>
+        <span matListItemTitle>WhatsApp</span>
+      </a>
+          <a mat-list-item routerLink="/business/orders" routerLinkActive="active">
+            <mat-icon matListItemIcon>receipt_long</mat-icon>
+            <span matListItemTitle>Pedidos</span>
+          </a>
+          <a mat-list-item routerLink="/business/settings" routerLinkActive="active">
+            <mat-icon matListItemIcon>settings</mat-icon>
+            <span matListItemTitle>Configuración</span>
+          </a>
+        </mat-nav-list>
+      </div>
+
+      <div class="sidenav-footer">
+        <mat-icon>info</mat-icon>
+        <span>BuilderBot + RAG</span>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="top-toolbar">
+      <span class="toolbar-title">Panel del Negocio</span>
+      <span class="spacer"></span>
+      @if (auth.currentUser(); as user) {
+        <span class="user-chip">
+          <span class="user-avatar">{{ user.profile.firstName.charAt(0) }}</span>
+          {{ user.profile.firstName }}
+        </span>
+      }
+      <button mat-stroked-button class="logout-btn" (click)="logout()">Salir</button>
+    </mat-toolbar>
+    <main class="content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

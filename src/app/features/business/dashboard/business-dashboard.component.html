@@ -1,0 +1,88 @@
+<div class="page-header">
+  <div>
+    <h1>Panel del negocio</h1>
+    <p class="subtitle">Resumen de pedidos, documentos y actividad reciente.</p>
+  </div>
+</div>
+
+@if (metrics(); as m) {
+  <div class="stats">
+    <mat-card class="iv-card stat">
+      <mat-card-content>
+        <mat-icon class="stat-icon orders">receipt_long</mat-icon>
+        <div class="value">{{ m.ordersCount }}</div>
+        <div class="label">Pedidos</div>
+      </mat-card-content>
+    </mat-card>
+    <mat-card class="iv-card stat">
+      <mat-card-content>
+        <mat-icon class="stat-icon docs">description</mat-icon>
+        <div class="value">{{ m.documentsReady }} / {{ m.documentsCount }}</div>
+        <div class="label">Documentos listos</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="grid">
+    <mat-card class="iv-card">
+      <mat-card-header>
+        <mat-card-title>Pedidos recientes</mat-card-title>
+        <a mat-button color="primary" routerLink="/business/orders">Ver todos</a>
+      </mat-card-header>
+      @if (m.recentOrders.length === 0) {
+        <mat-card-content class="empty-state">Aún no hay pedidos registrados.</mat-card-content>
+      } @else {
+        <table mat-table [dataSource]="m.recentOrders" class="full-width">
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let row">{{ row.createdAt | date : 'short' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <td mat-cell *matCellDef="let row">{{ row.customerName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let row">{{ row.total | currency : row.currency }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="orderColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: orderColumns"></tr>
+        </table>
+      }
+    </mat-card>
+
+    <mat-card class="iv-card">
+      <mat-card-header>
+        <mat-card-title>Actividad reciente</mat-card-title>
+      </mat-card-header>
+      @if (m.recentAudit.length === 0) {
+        <mat-card-content class="empty-state">Sin actividad registrada aún.</mat-card-content>
+      } @else {
+        <table mat-table [dataSource]="m.recentAudit" class="full-width">
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let row">{{ row.createdAt | date : 'short' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Acción</th>
+            <td mat-cell *matCellDef="let row">{{ row.action }}</td>
+          </ng-container>
+          <ng-container matColumnDef="resource">
+            <th mat-header-cell *matHeaderCellDef>Recurso</th>
+            <td mat-cell *matCellDef="let row">{{ row.resource }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="auditColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: auditColumns"></tr>
+        </table>
+      }
+    </mat-card>
+  </div>
+} @else {
+  <mat-card class="iv-card">
+    <mat-card-content class="empty-state">Cargando métricas...</mat-card-content>
+  </mat-card>
+}

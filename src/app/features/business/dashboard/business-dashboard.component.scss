@@ -1,0 +1,63 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat mat-card-content {
+  position: relative;
+  padding-top: 0.5rem;
+}
+
+.stat-icon {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  opacity: 0.15;
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+
+  &.orders {
+    color: #4f46e5;
+  }
+
+  &.docs {
+    color: #0891b2;
+  }
+}
+
+.stat .value {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.stat .label {
+  color: var(--iv-muted);
+  margin-top: 0.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}

@@ -1,0 +1,39 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.subtitle {
+  color: #64748b;
+  max-width: 560px;
+}
+
+.upload-btn span {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: #1976d2;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.ready {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.failed {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+mat-progress-bar {
+  margin-bottom: 1rem;
+}

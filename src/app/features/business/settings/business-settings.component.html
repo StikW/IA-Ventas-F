@@ -1,0 +1,67 @@
+<h1>Configuración del negocio</h1>
+
+<mat-card class="section">
+  <mat-card-header>
+    <mat-card-title>Perfil</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Descripción</mat-label>
+        <textarea matInput rows="3" formControlName="description"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Dirección</mat-label>
+        <input matInput formControlName="address" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Horario</mat-label>
+        <input matInput formControlName="businessHours" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Datos bancarios (transferencias)</mat-label>
+        <textarea matInput rows="2" formControlName="bankAccountInfo"></textarea>
+      </mat-form-field>
+      <button mat-flat-button color="primary" type="submit">Guardar</button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="section">
+  <mat-card-header>
+    <mat-card-title>API Key para BuilderBot</mat-card-title>
+    <mat-card-subtitle>
+      BuilderBot usa esta clave para consultar conocimiento de productos (RAG) y operaciones del negocio.
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    @if (apiKeyPrefix()) {
+      <p>Prefijo activo: <code>{{ apiKeyPrefix() }}</code></p>
+    } @else {
+      <p>No hay API Key activa.</p>
+    }
+
+    @if (generatedApiKey()) {
+      <div class="api-key-box">
+        <strong>Copia esta clave ahora:</strong>
+        <code>{{ generatedApiKey() }}</code>
+      </div>
+    }
+
+    <button mat-stroked-button color="primary" type="button" (click)="regenerateApiKey()">
+      {{ apiKeyPrefix() ? 'Regenerar API Key' : 'Generar API Key' }}
+    </button>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="section">
+  <mat-card-header>
+    <mat-card-title>Integración BuilderBot</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>Endpoint RAG (desde BuilderBot):</p>
+    <code>POST {{ ragSearchUrl }}</code>
+    <p>Header: <code>X-API-Key: &lt;tu-api-key&gt;</code></p>
+    <p>Body: <code>{{ '{' }}"query": "¿Qué productos tienen?"{{ '}' }}</code></p>
+  </mat-card-content>
+</mat-card>

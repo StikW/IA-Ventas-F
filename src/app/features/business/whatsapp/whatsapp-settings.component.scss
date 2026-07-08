@@ -1,0 +1,96 @@
+.status-row {
+  margin-bottom: 1rem;
+}
+
+.status-card .status-label {
+  color: var(--iv-muted);
+  font-size: 0.85rem;
+}
+
+.status-card .status-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+
+  &.connected {
+    color: #15803d;
+  }
+}
+
+.status-card .phone {
+  margin-top: 0.5rem;
+}
+
+.status-card .meta {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--iv-muted);
+}
+
+.section {
+  margin-bottom: 1rem;
+}
+
+.link-form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.bot-id-field {
+  flex: 1;
+  min-width: 280px;
+}
+
+.steps {
+  margin: 0 0 1rem 1.25rem;
+  padding: 0;
+  color: var(--iv-muted);
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.phone-form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.phone-field {
+  flex: 1;
+  min-width: 240px;
+}
+
+.qr-image {
+  max-width: 280px;
+  border-radius: 12px;
+  border: 1px solid var(--iv-border);
+  margin-top: 1rem;
+}
+
+.hint,
+.pairing {
+  color: var(--iv-muted);
+}
+
+.warn mat-card-content {
+  color: #92400e;
+}
+
+.success mat-card-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #166534;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

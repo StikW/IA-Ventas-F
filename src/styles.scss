@@ -1,0 +1,155 @@
+@use '@angular/material' as mat;
+
+:root {
+  --iv-primary: #4f46e5;
+  --iv-primary-dark: #3730a3;
+  --iv-accent: #06b6d4;
+  --iv-bg: #eef2ff;
+  --iv-surface: #ffffff;
+  --iv-sidebar: #0f172a;
+  --iv-sidebar-hover: rgba(255, 255, 255, 0.08);
+  --iv-sidebar-active: rgba(99, 102, 241, 0.35);
+  --iv-text: #0f172a;
+  --iv-muted: #64748b;
+  --iv-border: #e2e8f0;
+  --iv-radius: 14px;
+  --iv-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--iv-bg);
+  color: var(--iv-text);
+}
+
+@include mat.core();
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$violet-palette,
+    tertiary: mat.$cyan-palette,
+  ),
+  typography: (
+    brand-family: Roboto,
+    plain-family: Roboto,
+  ),
+  density: (
+    scale: 0,
+  ),
+));
+
+html {
+  @include mat.all-component-themes($theme);
+}
+
+/* Material Icons — asegurar que mat-icon renderice glifos, no texto */
+.mat-icon {
+  font-family: 'Material Icons', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utilidades compartidas */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--iv-muted);
+    font-size: 0.95rem;
+  }
+}
+
+.iv-card {
+  border-radius: var(--iv-radius) !important;
+  box-shadow: var(--iv-shadow) !important;
+  border: 1px solid var(--iv-border);
+}
+
+.iv-card + .iv-card {
+  margin-top: 1rem;
+}
+
+.form-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--iv-primary);
+  margin: 0 0 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.form-grid .span-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 700px) {
+  .form-grid .span-2 {
+    grid-column: span 1;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #f1f5f9;
+  color: #475569;
+
+  &.active {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  &.inactive {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+}
+
+a.table-link {
+  color: var(--iv-primary);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: var(--iv-muted);
+}

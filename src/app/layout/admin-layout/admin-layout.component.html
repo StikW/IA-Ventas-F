@@ -1,0 +1,51 @@
+<mat-sidenav-container class="layout-container">
+  <mat-sidenav mode="side" opened fixedInViewport class="sidenav">
+    <div class="sidenav-inner">
+      <div class="brand">
+        <div class="brand-logo">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div>
+          <div class="brand-title">IA Ventas</div>
+          <div class="brand-subtitle">Administración</div>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Menú</div>
+        <mat-nav-list class="nav-list">
+          <a mat-list-item routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <mat-icon matListItemIcon>dashboard</mat-icon>
+            <span matListItemTitle>Dashboard</span>
+          </a>
+          <a mat-list-item routerLink="/admin/businesses" routerLinkActive="active">
+            <mat-icon matListItemIcon>store</mat-icon>
+            <span matListItemTitle>Negocios</span>
+          </a>
+        </mat-nav-list>
+      </div>
+
+      <div class="sidenav-footer">
+        <mat-icon>admin_panel_settings</mat-icon>
+        <span>Panel global</span>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="top-toolbar">
+      <span class="toolbar-title">Panel Administrador</span>
+      <span class="spacer"></span>
+      @if (auth.currentUser(); as user) {
+        <span class="user-chip">
+          <span class="user-avatar">{{ user.profile.firstName.charAt(0) }}{{ user.profile.lastName.charAt(0) }}</span>
+          {{ user.profile.firstName }} {{ user.profile.lastName }}
+        </span>
+      }
+      <button mat-stroked-button class="logout-btn" (click)="logout()">Salir</button>
+    </mat-toolbar>
+    <main class="content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

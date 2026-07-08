@@ -1,0 +1,114 @@
+<div class="page-header">
+  <div>
+    <h1>WhatsApp</h1>
+    <p class="subtitle">Escanea el QR para vincular el número de tu negocio.</p>
+  </div>
+  @if (config()?.configured) {
+    <button mat-stroked-button (click)="refreshStatus()" [disabled]="loading()">
+      Actualizar estado
+    </button>
+  }
+</div>
+
+@if (loading() && !config()) {
+  <mat-card class="iv-card"><mat-card-content class="empty-state">Cargando...</mat-card-content></mat-card>
+}
+
+@if (config(); as cfg) {
+  @if (!cfg.enabled) {
+    <mat-card class="iv-card warn">
+      <mat-card-content>
+        BuilderBot no está configurado en el servidor. El administrador debe agregar
+        <code>BUILDERBOT_API_KEY</code> de
+        <a href="https://console.builderbot.app/apikeys" target="_blank" rel="noopener">console.builderbot.app</a>.
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (cfg.enabled && !cfg.configured) {
+    <mat-card class="iv-card section">
+      <mat-card-header>
+        <mat-card-title>Activar WhatsApp</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ cfg.message ?? 'Se creará un device en BuilderBot para este negocio.' }}</p>
+        <button mat-flat-button color="primary" (click)="provisionWhatsApp()" [disabled]="provisioning()">
+          Activar WhatsApp
+        </button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (cfg.enabled && cfg.configured) {
+    <div class="status-row">
+      <mat-card class="iv-card status-card">
+        <mat-card-content>
+          <div class="status-label">Estado de sesión</div>
+          <div class="status-value" [class.connected]="cfg.sessionStatus === 'connected'">
+            {{ statusLabel(cfg.sessionStatus) }}
+          </div>
+          @if (cfg.phone) {
+            <div class="phone">Número: {{ cfg.phone }}</div>
+          }
+          <div class="meta">Device ID: <code>{{ cfg.deviceId }}</code></div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    @if (cfg.sessionStatus !== 'connected') {
+      <mat-card class="iv-card section">
+        <mat-card-header>
+          <mat-card-title>Vincular con código QR</mat-card-title>
+          <button mat-flat-button color="primary" (click)="loadQr()" [disabled]="loadingQr()">Mostrar QR</button>
+        </mat-card-header>
+        <mat-card-content>
+          @if (loadingQr()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          }
+          @if (qr()?.qrImageUrl) {
+            <img class="qr-image" [src]="qr()!.qrImageUrl" alt="QR WhatsApp" />
+          }
+          @if (qr()?.qrBase64) {
+            <img class="qr-image" [src]="'data:image/png;base64,' + qr()!.qrBase64" alt="QR WhatsApp" />
+          }
+          @if (qr()?.pairingCode) {
+            <p>Código: <strong>{{ qr()!.pairingCode }}</strong></p>
+          }
+          @if (!qr()) {
+            <p class="hint">Escanea el QR desde WhatsApp → Dispositivos vinculados.</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="iv-card section">
+        <mat-card-header>
+          <mat-card-title>Opción alternativa — Emparejamiento por número</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="phoneForm" (ngSubmit)="connectByPhone()" class="phone-form">
+            <mat-form-field appearance="outline" class="phone-field">
+              <mat-label>Tu número WhatsApp</mat-label>
+              <input matInput formControlName="phone" placeholder="+573001234567" />
+              <mat-hint>Formato internacional con +</mat-hint>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="phoneForm.invalid || connecting()">
+              Solicitar código
+            </button>
+          </form>
+          @if (pairingCode()) {
+            <p class="pairing">Código de emparejamiento: <strong>{{ pairingCode() }}</strong></p>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (cfg.sessionStatus === 'connected') {
+      <mat-card class="iv-card success">
+        <mat-card-content>
+          <mat-icon>check_circle</mat-icon>
+          WhatsApp conectado. El agente puede recibir mensajes en este número.
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+}
