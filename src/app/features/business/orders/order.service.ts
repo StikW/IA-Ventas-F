@@ -36,6 +36,10 @@ export class OrderService {
     return this.http.get<PaginatedResponse<Order>>(this.baseUrl, { params: httpParams });
   }
 
+  updateStatus(orderId: string, status: string) {
+    return this.http.patch<ApiResponse<Order>>(`${this.baseUrl}/${orderId}/status`, { status });
+  }
+
   getMetrics() {
     return this.http.get<ApiResponse<TenantMetrics>>(`${this.baseUrl}/metrics/tenant`);
   }

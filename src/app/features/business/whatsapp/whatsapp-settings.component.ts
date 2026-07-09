@@ -1,53 +1,41 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import {
-  BuilderBotConfigView,
-  BuilderBotQrView,
-  BuilderBotService,
-} from './builderbot.service';
+import { BuilderBotConfigView, BuilderBotService } from './builderbot.service';
 
 @Component({
   selector: 'app-whatsapp-settings',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconModule,
-    MatProgressBarModule,
-    MatSnackBarModule,
-  ],
+  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatSnackBarModule],
   templateUrl: './whatsapp-settings.component.html',
   styleUrl: './whatsapp-settings.component.scss',
 })
-export class WhatsAppSettingsComponent implements OnInit {
+export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
   private readonly builderBotService = inject(BuilderBotService);
-  private readonly fb = inject(FormBuilder);
   private readonly snackBar = inject(MatSnackBar);
 
   readonly config = signal<BuilderBotConfigView | null>(null);
-  readonly qr = signal<BuilderBotQrView | null>(null);
+  readonly qrObjectUrl = signal<string | null>(null);
   readonly loading = signal(false);
   readonly loadingQr = signal(false);
-  readonly connecting = signal(false);
-  readonly pairingCode = signal<string | null>(null);
   readonly provisioning = signal(false);
+  readonly qrError = signal<string | null>(null);
+  readonly popupBlocked = signal(false);
 
-  phoneForm = this.fb.nonNullable.group({
-    phone: ['', [Validators.required, Validators.pattern(/^\+?[0-9]{8,20}$/)]],
-  });
+  private qrRefreshTimer?: ReturnType<typeof setInterval>;
+  private statusPollTimer?: ReturnType<typeof setInterval>;
+  private connectPopup?: Window | null;
 
   ngOnInit(): void {
     this.loadConfig();
+  }
+
+  ngOnDestroy(): void {
+    this.clearTimers();
+    this.revokeQrUrl();
   }
 
   loadConfig(): void {
@@ -56,6 +44,12 @@ export class WhatsAppSettingsComponent implements OnInit {
       next: (res) => {
         this.config.set(res.data);
         this.loading.set(false);
+        if (res.data.configured && res.data.sessionStatus !== 'connected') {
+          this.startQrFlow(res.data);
+        } else {
+          this.clearTimers();
+          this.revokeQrUrl();
+        }
       },
       error: (err) => {
         this.loading.set(false);
@@ -64,33 +58,183 @@ export class WhatsAppSettingsComponent implements OnInit {
     });
   }
 
-  loadQr(): void {
+  private startQrFlow(cfg: BuilderBotConfigView): void {
+    this.loadQrImage();
+    this.maybeAutoOpenConnectPanel(cfg);
+    this.clearTimers();
+    this.qrRefreshTimer = setInterval(() => this.loadQrImage(), 45000);
+    this.statusPollTimer = setInterval(() => this.pollConnectionStatus(), 10000);
+  }
+
+  /** Abre el panel BBC en ventana emergente (no iframe — BBC lo bloquea). */
+  openConnectPanel(): void {
+    const url = this.config()?.connectUrl;
+    if (!url) {
+      this.snackBar.open('No hay enlace de vinculación disponible', 'Cerrar', { duration: 4000 });
+      return;
+    }
+
+    this.popupBlocked.set(false);
+    const popup = window.open(
+      url,
+      'builderbot-whatsapp-connect',
+      'noopener,noreferrer,width=520,height=760,scrollbars=yes,resizable=yes'
+    );
+    this.connectPopup = popup;
+
+    if (!popup) {
+      this.popupBlocked.set(true);
+      this.snackBar.open('Permite ventanas emergentes o usa el enlace manual de abajo.', 'Cerrar', {
+        duration: 8000,
+      });
+    }
+  }
+
+  private maybeAutoOpenConnectPanel(cfg: BuilderBotConfigView): void {
+    if (!cfg.connectUrl) return;
+
+    const projectId = cfg.projectId ?? cfg.deviceId ?? 'default';
+    const storageKey = `bb-connect-popup:${projectId}`;
+    if (sessionStorage.getItem(storageKey)) return;
+
+    sessionStorage.setItem(storageKey, '1');
+    this.openConnectPanel();
+  }
+
+  private clearTimers(): void {
+    if (this.qrRefreshTimer) {
+      clearInterval(this.qrRefreshTimer);
+      this.qrRefreshTimer = undefined;
+    }
+    if (this.statusPollTimer) {
+      clearInterval(this.statusPollTimer);
+      this.statusPollTimer = undefined;
+    }
+  }
+
+  private revokeQrUrl(): void {
+    const current = this.qrObjectUrl();
+    if (current) URL.revokeObjectURL(current);
+    this.qrObjectUrl.set(null);
+  }
+
+  loadQrImage(): void {
     this.loadingQr.set(true);
-    this.builderBotService.getQr().subscribe({
-      next: (res) => {
-        this.qr.set(res.data);
-        this.loadingQr.set(false);
+    this.qrError.set(null);
+    this.builderBotService.getQrImage().subscribe({
+      next: (blob) => {
+        void this.applyQrBlob(blob);
       },
       error: (err) => {
-        this.loadingQr.set(false);
-        this.snackBar.open(err.error?.error?.message ?? 'No se pudo obtener el QR', 'Cerrar', { duration: 5000 });
+        void this.handleQrLoadError(err);
       },
     });
   }
 
-  connectByPhone(): void {
-    if (this.phoneForm.invalid) return;
-    this.connecting.set(true);
-    this.builderBotService.connectPhone(this.phoneForm.getRawValue().phone).subscribe({
+  private async applyQrBlob(blob: Blob): Promise<void> {
+    if (blob.type.includes('json')) {
+      const text = await blob.text();
+      try {
+        const parsed = JSON.parse(text) as { error?: { message?: string } };
+        this.loadingQr.set(false);
+        this.qrError.set(parsed.error?.message ?? 'No se pudo obtener el QR');
+      } catch {
+        this.loadingQr.set(false);
+        this.qrError.set('No se pudo obtener el QR');
+      }
+      return;
+    }
+
+    try {
+      const scaledUrl = await this.scaleQrBlob(blob);
+      this.revokeQrUrl();
+      this.qrObjectUrl.set(scaledUrl);
+      this.loadingQr.set(false);
+    } catch {
+      this.loadingQr.set(false);
+      this.qrError.set('No se pudo renderizar el QR');
+    }
+  }
+
+  /** BuilderBot devuelve PNG ~65×65; escalamos sin suavizado para que sea escaneable. */
+  private scaleQrBlob(blob: Blob, targetSize = 320): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(blob);
+      const img = new Image();
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+
+        const scale = Math.max(1, Math.ceil(targetSize / Math.max(img.width, img.height)));
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('canvas'));
+          return;
+        }
+
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob((scaled) => {
+          if (!scaled) {
+            reject(new Error('blob'));
+            return;
+          }
+          resolve(URL.createObjectURL(scaled));
+        }, 'image/png');
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('image'));
+      };
+
+      img.src = objectUrl;
+    });
+  }
+
+  private async handleQrLoadError(err: { error?: unknown }): Promise<void> {
+    this.loadingQr.set(false);
+
+    let code: string | undefined;
+    let message = 'No se pudo obtener el QR';
+
+    if (err.error instanceof Blob) {
+      try {
+        const text = await err.error.text();
+        const parsed = JSON.parse(text) as { error?: { code?: string; message?: string } };
+        code = parsed.error?.code;
+        message = parsed.error?.message ?? message;
+      } catch {
+        // mantener mensaje genérico
+      }
+    } else if (err.error && typeof err.error === 'object') {
+      const apiErr = err.error as { error?: { code?: string; message?: string } };
+      code = apiErr.error?.code;
+      message = apiErr.error?.message ?? message;
+    }
+
+    if (code === 'BUILDERBOT_ALREADY_CONNECTED') {
+      this.refreshStatus();
+      return;
+    }
+
+    this.qrError.set(message);
+  }
+
+  private pollConnectionStatus(): void {
+    this.builderBotService.refreshStatus().subscribe({
       next: (res) => {
-        this.connecting.set(false);
-        if (res.data.pairingCode) this.pairingCode.set(res.data.pairingCode);
-        this.snackBar.open('Código solicitado. Revisa WhatsApp en tu teléfono.', 'Cerrar', { duration: 5000 });
-        this.refreshStatus();
-      },
-      error: (err) => {
-        this.connecting.set(false);
-        this.snackBar.open(err.error?.error?.message ?? 'Error al conectar', 'Cerrar', { duration: 5000 });
+        if (res.data.sessionStatus === 'connected') {
+          this.clearTimers();
+          this.revokeQrUrl();
+          this.loadConfig();
+          this.snackBar.open('WhatsApp conectado correctamente', 'Cerrar', { duration: 5000 });
+        }
       },
     });
   }
@@ -111,7 +255,7 @@ export class WhatsAppSettingsComponent implements OnInit {
     this.builderBotService.provision().subscribe({
       next: () => {
         this.provisioning.set(false);
-        this.snackBar.open('WhatsApp provisionado', 'Cerrar', { duration: 4000 });
+        this.snackBar.open('WhatsApp provisionado. Escanea el QR para vincular.', 'Cerrar', { duration: 5000 });
         this.loadConfig();
       },
       error: (err) => {
@@ -126,11 +270,11 @@ export class WhatsAppSettingsComponent implements OnInit {
       case 'connected':
         return 'Conectado';
       case 'connecting':
-        return 'Conectando...';
+        return 'Esperando escaneo QR';
       case 'disconnected':
         return 'Desconectado';
       default:
-        return 'Desconocido';
+        return 'Preparando conexión...';
     }
   }
 }

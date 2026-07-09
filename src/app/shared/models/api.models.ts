@@ -76,7 +76,8 @@ export interface DeleteBusinessResult {
   users: number;
   storageFiles: number;
   vectorsCleared: boolean;
-  builderBotDeviceDeleted: boolean;
+  builderBotDeployDeleted: boolean;
+  builderBotProjectDeleted: boolean;
   dynamoRecords: number;
   auditLogs: number;
   warnings: string[];

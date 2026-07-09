@@ -13,6 +13,8 @@ export interface BuilderBotConfigView {
   sessionStatus?: 'disconnected' | 'connecting' | 'connected' | 'unknown';
   platformApiKeyPrefix?: string;
   webhookUrl?: string;
+  projectId?: string;
+  connectUrl?: string;
   updatedAt?: string;
 }
 
@@ -33,6 +35,10 @@ export class BuilderBotService {
 
   getQr() {
     return this.http.get<ApiResponse<BuilderBotQrView>>(`${this.baseUrl}/qr`);
+  }
+
+  getQrImage() {
+    return this.http.get(`${this.baseUrl}/qr/image`, { responseType: 'blob' });
   }
 
   connectPhone(phone: string) {

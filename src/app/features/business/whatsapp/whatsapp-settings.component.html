@@ -1,7 +1,7 @@
 <div class="page-header">
   <div>
     <h1>WhatsApp</h1>
-    <p class="subtitle">Escanea el QR para vincular el número de tu negocio.</p>
+    <p class="subtitle">Vincula WhatsApp escaneando el QR aquí o abriendo la ventana de BuilderBot Cloud.</p>
   </div>
   @if (config()?.configured) {
     <button mat-stroked-button (click)="refreshStatus()" [disabled]="loading()">
@@ -20,7 +20,7 @@
       <mat-card-content>
         BuilderBot no está configurado en el servidor. El administrador debe agregar
         <code>BUILDERBOT_API_KEY</code> de
-        <a href="https://console.builderbot.app/apikeys" target="_blank" rel="noopener">console.builderbot.app</a>.
+        <a href="https://app.builderbot.cloud" target="_blank" rel="noopener">app.builderbot.cloud</a>.
       </mat-card-content>
     </mat-card>
   }
@@ -31,7 +31,7 @@
         <mat-card-title>Activar WhatsApp</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <p>{{ cfg.message ?? 'Se creará un device en BuilderBot para este negocio.' }}</p>
+        <p>{{ cfg.message ?? 'Se creará un proyecto en BuilderBot Cloud y su deploy para este negocio.' }}</p>
         <button mat-flat-button color="primary" (click)="provisionWhatsApp()" [disabled]="provisioning()">
           Activar WhatsApp
         </button>
@@ -50,53 +50,57 @@
           @if (cfg.phone) {
             <div class="phone">Número: {{ cfg.phone }}</div>
           }
-          <div class="meta">Device ID: <code>{{ cfg.deviceId }}</code></div>
+          <div class="meta">Proyecto: <code>{{ cfg.projectId ?? cfg.deviceId }}</code></div>
         </mat-card-content>
       </mat-card>
     </div>
 
     @if (cfg.sessionStatus !== 'connected') {
-      <mat-card class="iv-card section">
-        <mat-card-header>
-          <mat-card-title>Vincular con código QR</mat-card-title>
-          <button mat-flat-button color="primary" (click)="loadQr()" [disabled]="loadingQr()">Mostrar QR</button>
-        </mat-card-header>
-        <mat-card-content>
-          @if (loadingQr()) {
-            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-          }
-          @if (qr()?.qrImageUrl) {
-            <img class="qr-image" [src]="qr()!.qrImageUrl" alt="QR WhatsApp" />
-          }
-          @if (qr()?.qrBase64) {
-            <img class="qr-image" [src]="'data:image/png;base64,' + qr()!.qrBase64" alt="QR WhatsApp" />
-          }
-          @if (qr()?.pairingCode) {
-            <p>Código: <strong>{{ qr()!.pairingCode }}</strong></p>
-          }
-          @if (!qr()) {
-            <p class="hint">Escanea el QR desde WhatsApp → Dispositivos vinculados.</p>
-          }
-        </mat-card-content>
-      </mat-card>
+      @if (cfg.connectUrl) {
+        <mat-card class="iv-card section connect-panel-card">
+          <mat-card-header>
+            <mat-card-title>Vincular en BuilderBot Cloud</mat-card-title>
+            <button mat-flat-button color="primary" type="button" (click)="openConnectPanel()">
+              <mat-icon>open_in_new</mat-icon>
+              Abrir ventana de vinculación
+            </button>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="hint">
+              Se abrirá una ventana nueva en BuilderBot Cloud para escanear el QR o vincular tu número.
+              Inicia sesión en app.builderbot.cloud si te lo pide (misma cuenta de tu API key).
+            </p>
+            @if (popupBlocked()) {
+              <p class="qr-error">
+                El navegador bloqueó la ventana emergente.
+                <a [href]="cfg.connectUrl" target="_blank" rel="noopener noreferrer">Abrir enlace manualmente</a>
+              </p>
+            }
+          </mat-card-content>
+        </mat-card>
+      }
 
       <mat-card class="iv-card section">
         <mat-card-header>
-          <mat-card-title>Opción alternativa — Emparejamiento por número</mat-card-title>
+          <mat-card-title>Vincular con código QR</mat-card-title>
+          <button mat-stroked-button (click)="loadQrImage()" [disabled]="loadingQr()">
+            Actualizar QR
+          </button>
         </mat-card-header>
         <mat-card-content>
-          <form [formGroup]="phoneForm" (ngSubmit)="connectByPhone()" class="phone-form">
-            <mat-form-field appearance="outline" class="phone-field">
-              <mat-label>Tu número WhatsApp</mat-label>
-              <input matInput formControlName="phone" placeholder="+573001234567" />
-              <mat-hint>Formato internacional con +</mat-hint>
-            </mat-form-field>
-            <button mat-flat-button color="primary" type="submit" [disabled]="phoneForm.invalid || connecting()">
-              Solicitar código
-            </button>
-          </form>
-          @if (pairingCode()) {
-            <p class="pairing">Código de emparejamiento: <strong>{{ pairingCode() }}</strong></p>
+          @if (loadingQr() && !qrObjectUrl()) {
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <p class="hint">Preparando deploy y generando QR...</p>
+          }
+          @if (qrObjectUrl()) {
+            <div class="qr-wrap">
+              <img class="qr-image" [src]="qrObjectUrl()!" alt="QR WhatsApp" width="320" height="320" />
+            </div>
+            <p class="hint">WhatsApp → Dispositivos vinculados → Vincular dispositivo → Escanea este código.</p>
+          }
+          @if (qrError()) {
+            <p class="qr-error">{{ qrError() }}</p>
+            <p class="hint">Si el proyecto ya no existe en BuilderBot, pulsa «Activar WhatsApp» de nuevo o contacta al administrador.</p>
           }
         </mat-card-content>
       </mat-card>

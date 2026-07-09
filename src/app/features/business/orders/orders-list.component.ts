@@ -40,7 +40,7 @@ export class OrdersListComponent implements OnInit, OnDestroy {
   readonly statusFilter = signal<string>('');
   readonly loading = signal(false);
 
-  displayedColumns = ['createdAt', 'customer', 'items', 'total', 'status', 'wc'];
+  displayedColumns = ['createdAt', 'customer', 'items', 'total', 'status', 'wc', 'actions'];
 
   ngOnInit(): void {
     this.load();
@@ -83,5 +83,19 @@ export class OrdersListComponent implements OnInit, OnDestroy {
 
   itemSummary(order: Order): string {
     return order.items.map((i) => `${i.quantity}x ${i.name}`).join(', ');
+  }
+
+  markAsPaid(order: Order): void {
+    this.orderService.updateStatus(order.id, 'PAID').subscribe({
+      next: () => {
+        this.snackBar.open('Pedido marcado como pagado. El cliente será notificado por WhatsApp.', 'Cerrar', {
+          duration: 5000,
+        });
+        this.load();
+      },
+      error: (err) => {
+        this.snackBar.open(err.error?.error?.message ?? 'No se pudo actualizar el pedido', 'Cerrar', { duration: 5000 });
+      },
+    });
   }
 }
