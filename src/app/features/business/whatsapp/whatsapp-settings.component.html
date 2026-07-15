@@ -69,7 +69,8 @@
       </mat-card-header>
       <mat-card-content>
         <p class="hint">
-          BuilderBot envía los mensajes de WhatsApp a esta URL. Debe ser pública (no localhost) para que el agente responda.
+          En BuilderBot Cloud se crea un flujo HTTP que reenvía los mensajes a esta URL pública.
+          Debe ser accesible desde internet (no localhost) para que el agente responda.
         </p>
         @if (cfg.webhookUrl) {
           <div class="webhook-url-row">
@@ -83,8 +84,16 @@
               <mat-icon>content_copy</mat-icon>
             </button>
           </div>
+          @if (cfg.appPublicUrl) {
+            <p class="hint meta-line">Servidor: <code>{{ cfg.appPublicUrl }}</code></p>
+          }
         } @else {
           <p class="qr-error">Webhook no registrado. Pulsa «Re-sincronizar webhook».</p>
+        }
+        @if (cfg.webhookNeedsSync) {
+          <p class="qr-error">
+            La URL cambió respecto a la última sincronización con BuilderBot. Pulsa «Re-sincronizar webhook».
+          </p>
         }
         @if (isLocalWebhook(cfg.webhookUrl)) {
           <p class="qr-error">

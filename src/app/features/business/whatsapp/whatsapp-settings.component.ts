@@ -272,7 +272,9 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.syncingWebhook.set(false);
         this.config.update((current) =>
-          current ? { ...current, webhookUrl: res.data.webhookUrl, updatedAt: res.data.syncedAt } : current
+          current
+            ? { ...current, webhookUrl: res.data.webhookUrl, updatedAt: res.data.syncedAt, webhookNeedsSync: false }
+            : current
         );
         this.snackBar.open('Webhook sincronizado con BuilderBot', 'Cerrar', { duration: 5000 });
       },

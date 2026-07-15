@@ -13,6 +13,8 @@ export interface BuilderBotConfigView {
   sessionStatus?: 'disconnected' | 'connecting' | 'connected' | 'unknown';
   platformApiKeyPrefix?: string;
   webhookUrl?: string;
+  appPublicUrl?: string;
+  webhookNeedsSync?: boolean;
   projectId?: string;
   connectUrl?: string;
   updatedAt?: string;
