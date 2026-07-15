@@ -56,4 +56,8 @@ export class BuilderBotService {
   provision() {
     return this.http.post<ApiResponse<BuilderBotConfigView | null>>(`${this.baseUrl}/provision`, {});
   }
+
+  syncWebhook() {
+    return this.http.post<ApiResponse<{ webhookUrl: string; syncedAt: string }>>(`${this.baseUrl}/sync-webhook`, {});
+  }
 }

@@ -121,6 +121,25 @@
   color: #166534;
 }
 
+.webhook-card .webhook-url-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.webhook-url {
+  flex: 1;
+  display: block;
+  padding: 0.65rem 0.75rem;
+  background: #f8fafc;
+  border: 1px solid var(--iv-border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
 .header-actions {
   display: flex;
   gap: 0.75rem;

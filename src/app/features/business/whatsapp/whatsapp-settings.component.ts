@@ -22,6 +22,7 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
   readonly loading = signal(false);
   readonly loadingQr = signal(false);
   readonly provisioning = signal(false);
+  readonly syncingWebhook = signal(false);
   readonly qrError = signal<string | null>(null);
   readonly popupBlocked = signal(false);
 
@@ -263,6 +264,37 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
         this.snackBar.open(err.error?.error?.message ?? 'No se pudo provisionar', 'Cerrar', { duration: 5000 });
       },
     });
+  }
+
+  syncWebhook(): void {
+    this.syncingWebhook.set(true);
+    this.builderBotService.syncWebhook().subscribe({
+      next: (res) => {
+        this.syncingWebhook.set(false);
+        this.config.update((current) =>
+          current ? { ...current, webhookUrl: res.data.webhookUrl, updatedAt: res.data.syncedAt } : current
+        );
+        this.snackBar.open('Webhook sincronizado con BuilderBot', 'Cerrar', { duration: 5000 });
+      },
+      error: (err) => {
+        this.syncingWebhook.set(false);
+        this.snackBar.open(err.error?.error?.message ?? 'No se pudo sincronizar el webhook', 'Cerrar', {
+          duration: 6000,
+        });
+      },
+    });
+  }
+
+  copyWebhookUrl(url: string): void {
+    void navigator.clipboard.writeText(url).then(
+      () => this.snackBar.open('URL copiada al portapapeles', 'Cerrar', { duration: 3000 }),
+      () => this.snackBar.open('No se pudo copiar la URL', 'Cerrar', { duration: 3000 })
+    );
+  }
+
+  isLocalWebhook(url?: string): boolean {
+    if (!url) return false;
+    return /localhost|127\.0\.0\.1/i.test(url);
   }
 
   statusLabel(status?: string): string {
