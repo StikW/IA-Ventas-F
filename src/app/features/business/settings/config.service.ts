@@ -10,6 +10,8 @@ export interface BusinessConfig {
     address?: string;
     businessHours?: string;
     bankAccountInfo?: string;
+    checkoutFormUrl?: string;
+    checkoutMode?: 'link' | 'whatsapp';
   };
   createdAt: string;
   updatedAt: string;

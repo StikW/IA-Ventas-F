@@ -36,6 +36,8 @@ export class BusinessSettingsComponent implements OnInit {
     address: [''],
     businessHours: [''],
     bankAccountInfo: [''],
+    checkoutFormUrl: [''],
+    checkoutMode: ['link' as 'link' | 'whatsapp'],
   });
 
   ngOnInit(): void {
