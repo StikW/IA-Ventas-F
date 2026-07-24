@@ -34,14 +34,18 @@ export class WooCommerceSettingsComponent implements OnInit {
   readonly loadingProducts = signal(false);
   readonly testing = signal(false);
   readonly connected = signal(false);
+  readonly botApiConnected = signal(false);
   readonly hasCredentials = signal(false);
+  readonly hasBotApiCredentials = signal(false);
 
   productColumns = ['name', 'sku', 'price', 'stock'];
 
   form = this.fb.nonNullable.group({
     storeUrl: ['', [Validators.required]],
-    consumerKey: ['', Validators.required],
-    consumerSecret: ['', Validators.required],
+    consumerKey: [''],
+    consumerSecret: [''],
+    botApiUser: [''],
+    botApiPassword: [''],
   });
 
   ngOnInit(): void {
@@ -51,7 +55,9 @@ export class WooCommerceSettingsComponent implements OnInit {
         if (config) {
           this.form.patchValue({ storeUrl: config.storeUrl });
           this.connected.set(config.connected);
+          this.botApiConnected.set(config.botApiConnected);
           this.hasCredentials.set(config.hasCredentials);
+          this.hasBotApiCredentials.set(config.hasBotApiCredentials);
         }
       },
     });
@@ -66,9 +72,11 @@ export class WooCommerceSettingsComponent implements OnInit {
     this.wooService.saveConfig(this.form.getRawValue()).subscribe({
       next: (res) => {
         this.connected.set(res.data.connected);
+        this.botApiConnected.set(res.data.botApiConnected);
         this.hasCredentials.set(res.data.hasCredentials);
+        this.hasBotApiCredentials.set(res.data.hasBotApiCredentials);
         this.snackBar.open('Configuración WooCommerce guardada', 'Cerrar', { duration: 3000 });
-        this.form.patchValue({ consumerKey: '', consumerSecret: '' });
+        this.form.patchValue({ consumerKey: '', consumerSecret: '', botApiPassword: '' });
       },
       error: (err) =>
         this.snackBar.open(err.error?.error?.message ?? 'Error al guardar', 'Cerrar', { duration: 4000 }),
@@ -77,15 +85,27 @@ export class WooCommerceSettingsComponent implements OnInit {
 
   testConnection(): void {
     this.testing.set(true);
-    this.wooService.testConnection().subscribe({
+    const { botApiUser, botApiPassword } = this.form.getRawValue();
+    this.wooService.testConnection({ botApiUser, botApiPassword }).subscribe({
       next: (res) => {
         this.testing.set(false);
         this.connected.set(res.data.connected);
-        this.snackBar.open(
-          res.data.connected ? 'Conexión exitosa' : 'No se pudo conectar',
-          'Cerrar',
-          { duration: 3000 }
-        );
+        this.botApiConnected.set(res.data.botApiConnected ?? false);
+        if (res.data.botApiConnected) {
+          this.hasBotApiCredentials.set(true);
+        }
+        const status = res.data.botApiStatus;
+        let msg = 'No se pudo conectar';
+        if (res.data.connected && res.data.botApiConnected) {
+          msg = 'WooCommerce y MASSI Bot API conectados';
+        } else if (res.data.connected && status === 'auth_failed') {
+          msg =
+            'WooCommerce OK. MASSI Bot API: usuario o Application Password incorrectos (no uses la contraseña de login de WP).';
+        } else if (res.data.connected) {
+          msg =
+            'WooCommerce OK. Falta Usuario WP + Application Password del bot (guárdalos y vuelve a probar).';
+        }
+        this.snackBar.open(msg, 'Cerrar', { duration: 6000 });
       },
       error: (err) => {
         this.testing.set(false);

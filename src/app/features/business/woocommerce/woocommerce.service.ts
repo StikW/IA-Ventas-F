@@ -6,9 +6,11 @@ import { ApiResponse } from '../../../shared/models/api.models';
 export interface WooCommerceConfig {
   storeUrl: string;
   connected: boolean;
+  botApiConnected: boolean;
   lastSyncAt?: string;
   updatedAt: string;
   hasCredentials: boolean;
+  hasBotApiCredentials: boolean;
 }
 
 export interface WooCommerceProduct {
@@ -29,12 +31,20 @@ export class WooCommerceService {
     return this.http.get<ApiResponse<WooCommerceConfig | null>>(`${this.baseUrl}/config`);
   }
 
-  saveConfig(payload: { storeUrl: string; consumerKey: string; consumerSecret: string }) {
+  saveConfig(payload: {
+    storeUrl: string;
+    consumerKey: string;
+    consumerSecret: string;
+    botApiUser?: string;
+    botApiPassword?: string;
+  }) {
     return this.http.put<ApiResponse<WooCommerceConfig>>(`${this.baseUrl}/config`, payload);
   }
 
-  testConnection() {
-    return this.http.post<ApiResponse<{ connected: boolean }>>(`${this.baseUrl}/test-connection`, {});
+  testConnection(payload?: { botApiUser?: string; botApiPassword?: string }) {
+    return this.http.post<
+      ApiResponse<{ connected: boolean; botApiConnected: boolean; botApiStatus?: string }>
+    >(`${this.baseUrl}/test-connection`, payload ?? {});
   }
 
   listProducts(page = 1) {

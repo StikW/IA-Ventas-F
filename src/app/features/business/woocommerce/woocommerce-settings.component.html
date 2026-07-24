@@ -6,7 +6,12 @@
     <mat-card-title>Conexión</mat-card-title>
     <mat-card-subtitle>
       @if (connected()) {
-        Estado: conectado
+        WooCommerce: conectado
+        @if (botApiConnected()) {
+          · MASSI Bot API: conectado
+        } @else if (hasBotApiCredentials()) {
+          · MASSI Bot API: credenciales guardadas (sin verificar)
+        }
       } @else if (hasCredentials()) {
         Estado: credenciales guardadas (sin verificar)
       } @else {
@@ -18,7 +23,7 @@
     <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
       <mat-form-field appearance="outline" class="full">
         <mat-label>URL de la tienda</mat-label>
-        <input matInput formControlName="storeUrl" placeholder="https://mitienda.com" />
+        <input matInput formControlName="storeUrl" placeholder="https://massijoyeria.local" />
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Consumer Key</mat-label>
@@ -27,6 +32,15 @@
       <mat-form-field appearance="outline">
         <mat-label>Consumer Secret</mat-label>
         <input matInput type="password" formControlName="consumerSecret" />
+      </mat-form-field>
+      <p class="hint full">MASSI Bot API (Application Password de WordPress para WhatsApp)</p>
+      <mat-form-field appearance="outline">
+        <mat-label>Usuario WP (Bot)</mat-label>
+        <input matInput formControlName="botApiUser" placeholder="iaventas-bot" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Application Password</mat-label>
+        <input matInput type="password" formControlName="botApiPassword" />
       </mat-form-field>
       <div class="actions">
         <button mat-flat-button color="primary" type="submit">Guardar</button>
