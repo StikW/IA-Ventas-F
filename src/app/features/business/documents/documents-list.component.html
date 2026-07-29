@@ -24,6 +24,9 @@
       <th mat-header-cell *matHeaderCellDef>Estado</th>
       <td mat-cell *matCellDef="let row">
         <span [class.ready]="row.status === 'READY'" [class.failed]="row.status === 'FAILED'">{{ row.status }}</span>
+        @if (row.status === 'FAILED' && row.errorMessage) {
+          <div class="error-msg">{{ row.errorMessage }}</div>
+        }
       </td>
     </ng-container>
 

@@ -53,9 +53,17 @@ export class DocumentsListComponent implements OnInit {
 
     this.uploading.set(true);
     this.documentService.upload(file).subscribe({
-      next: () => {
+      next: (res) => {
         this.uploading.set(false);
-        this.snackBar.open('Documento subido y procesado', 'Cerrar', { duration: 3000 });
+        if (res.data.status === 'FAILED') {
+          this.snackBar.open(
+            res.data.errorMessage ?? 'El archivo se subió pero falló la vectorización',
+            'Cerrar',
+            { duration: 8000 }
+          );
+        } else {
+          this.snackBar.open('Documento subido y procesado', 'Cerrar', { duration: 3000 });
+        }
         this.load();
         input.value = '';
       },
