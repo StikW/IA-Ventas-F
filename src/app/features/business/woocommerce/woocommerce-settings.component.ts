@@ -76,7 +76,7 @@ export class WooCommerceSettingsComponent implements OnInit {
         this.hasCredentials.set(res.data.hasCredentials);
         this.hasBotApiCredentials.set(res.data.hasBotApiCredentials);
         this.snackBar.open('Configuración WooCommerce guardada', 'Cerrar', { duration: 3000 });
-        this.form.patchValue({ consumerKey: '', consumerSecret: '', botApiPassword: '' });
+        this.form.patchValue({ consumerKey: '', consumerSecret: '' });
       },
       error: (err) =>
         this.snackBar.open(err.error?.error?.message ?? 'Error al guardar', 'Cerrar', { duration: 4000 }),
@@ -98,9 +98,12 @@ export class WooCommerceSettingsComponent implements OnInit {
         let msg = 'No se pudo conectar';
         if (res.data.connected && res.data.botApiConnected) {
           msg = 'WooCommerce y MASSI Bot API conectados';
+        } else if (res.data.connected && status === 'forbidden') {
+          msg =
+            'WooCommerce OK. MASSI Bot API: el servidor WordPress no recibió Authorization (revisa hosting o actualiza el plugin massi-bot-api).';
         } else if (res.data.connected && status === 'auth_failed') {
           msg =
-            'WooCommerce OK. MASSI Bot API: usuario o Application Password incorrectos (no uses la contraseña de login de WP).';
+            'WooCommerce OK. MASSI Bot API: usuario o Application Password incorrectos. Crea la App Password en el perfil de iaventas-bot y pulsa Guardar antes de Probar.';
         } else if (res.data.connected) {
           msg =
             'WooCommerce OK. Falta Usuario WP + Application Password del bot (guárdalos y vuelve a probar).';

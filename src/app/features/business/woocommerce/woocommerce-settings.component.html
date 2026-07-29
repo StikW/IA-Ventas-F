@@ -40,7 +40,8 @@
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Application Password</mat-label>
-        <input matInput type="password" formControlName="botApiPassword" />
+        <input matInput type="password" formControlName="botApiPassword" autocomplete="new-password" />
+        <mat-hint>Pégala con o sin espacios. Créala en el perfil del usuario bot (no la contraseña de login).</mat-hint>
       </mat-form-field>
       <div class="actions">
         <button mat-flat-button color="primary" type="submit">Guardar</button>
