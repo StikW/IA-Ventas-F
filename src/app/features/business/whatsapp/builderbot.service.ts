@@ -15,6 +15,8 @@ export interface BuilderBotConfigView {
   webhookUrl?: string;
   appPublicUrl?: string;
   webhookNeedsSync?: boolean;
+  /** Modo BuilderBot resuelto en servidor (`cloud-v2` = relay MCP + flows UI). */
+  apiMode?: 'cloud-v2' | 'wa-api';
   projectId?: string;
   connectUrl?: string;
   updatedAt?: string;

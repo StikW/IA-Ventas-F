@@ -57,21 +57,32 @@
 
     <mat-card class="iv-card section webhook-card">
       <mat-card-header>
-        <mat-card-title>Webhook del agente</mat-card-title>
+        <mat-card-title>Sincronización BuilderBot</mat-card-title>
         <button
           mat-stroked-button
           type="button"
           (click)="syncWebhook()"
           [disabled]="syncingWebhook() || loading()"
         >
-          Re-sincronizar webhook
+          @if (syncingWebhook()) {
+            Sincronizando…
+          } @else {
+            Re-sincronizar BuilderBot
+          }
         </button>
       </mat-card-header>
       <mat-card-content>
-        <p class="hint">
-          En BuilderBot Cloud se crea un flujo HTTP que reenvía los mensajes a esta URL pública.
-          Debe ser accesible desde internet (no localhost) para que el agente responda.
-        </p>
+        @if (cfg.apiMode === 'cloud-v2') {
+          <p class="hint">
+            Aplica la misma configuración que al crear el negocio: relay HTTP del agente, flows UI de
+            saludo (catálogo y carrito), reglas <code>route</code> y reboot del bot en BuilderBot Cloud.
+            El texto del agente sigue enviándose por API v2; los botones del saludo viven en flows del panel BBC.
+          </p>
+        } @else {
+          <p class="hint">
+            Registra la URL pública del webhook en el device de BuilderBot para que los mensajes lleguen al agente.
+          </p>
+        }
         @if (cfg.webhookUrl) {
           <div class="webhook-url-row">
             <code class="webhook-url">{{ cfg.webhookUrl }}</code>
@@ -87,12 +98,15 @@
           @if (cfg.appPublicUrl) {
             <p class="hint meta-line">Servidor: <code>{{ cfg.appPublicUrl }}</code></p>
           }
+          @if (cfg.updatedAt) {
+            <p class="hint meta-line">Última sincronización: {{ cfg.updatedAt | date: 'short' }}</p>
+          }
         } @else {
-          <p class="qr-error">Webhook no registrado. Pulsa «Re-sincronizar webhook».</p>
+          <p class="qr-error">Webhook no registrado. Pulsa «Re-sincronizar BuilderBot».</p>
         }
         @if (cfg.webhookNeedsSync) {
           <p class="qr-error">
-            La URL cambió respecto a la última sincronización con BuilderBot. Pulsa «Re-sincronizar webhook».
+            La URL cambió respecto a la última sincronización con BuilderBot. Pulsa «Re-sincronizar BuilderBot».
           </p>
         }
         @if (isLocalWebhook(cfg.webhookUrl)) {
@@ -100,6 +114,39 @@
             Esta URL apunta a localhost y BuilderBot no puede alcanzarla. Actualiza
             <code>APP_PUBLIC_URL</code> en el servidor (o usa ngrok en desarrollo) y vuelve a sincronizar.
           </p>
+        }
+        @if (cfg.apiMode === 'cloud-v2') {
+          <div class="bbc-manual-box">
+            <p class="bbc-manual-title">Botones en BuilderBot Cloud (una vez por negocio)</p>
+            <p class="hint">
+              Tras sincronizar, abre
+              <a href="https://app.builderbot.cloud" target="_blank" rel="noopener">app.builderbot.cloud</a>
+              → proyecto <code>{{ cfg.projectId ?? cfg.deviceId }}</code> → en cada flow, selecciona el bloque de
+              texto → <strong>Botones interactivos</strong> → agrega los botones y <strong>Guarda</strong> el bloque
+              (Reboot no guarda cambios del panel).
+            </p>
+            <ol class="bbc-steps">
+              <li>
+                <strong>IA Ventas — Saludo Sin Carrito</strong> → CTA URL <em>Ver catálogo</em>
+                @if (catalogUrlHint()) {
+                  → <code>{{ catalogUrlHint() }}</code>
+                } @else {
+                  → URL de tu tienda + ruta del catálogo (ej. <code>/tienda/</code>; se detecta al
+                  <a routerLink="/business/woocommerce">Probar conexión</a> en WooCommerce)
+                }
+              </li>
+              <li>
+                <strong>IA Ventas — Saludo Con Carrito</strong> → Reply <em>Vaciar carrito</em>
+                (<code>massi:cart:clear</code>) y, en opciones del bloque, <em>Redirigir a flujo</em> →
+                <em>Saludo Sin Carrito</em>
+              </li>
+            </ol>
+            <p class="hint bbc-manual-foot">
+              No modifiques el flow <strong>IA Ventas — Agente</strong> (relay HTTP). Puedes eliminar
+              <strong>IA Ventas — Menú UI</strong> si aún existe. Ejecuta esta sincronización tras cada deploy
+              que toque relay o flows BBC.
+            </p>
+          </div>
         }
       </mat-card-content>
     </mat-card>

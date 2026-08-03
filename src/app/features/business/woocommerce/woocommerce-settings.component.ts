@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { environment } from '../../../../environments/environment';
 import { WooCommerceService, WooCommerceProduct } from './woocommerce.service';
 
 @Component({
@@ -39,6 +40,7 @@ export class WooCommerceSettingsComponent implements OnInit {
   readonly hasBotApiCredentials = signal(false);
 
   productColumns = ['name', 'sku', 'price', 'stock'];
+  readonly apiBaseHint = environment.apiUrl;
 
   form = this.fb.nonNullable.group({
     storeUrl: ['', [Validators.required]],

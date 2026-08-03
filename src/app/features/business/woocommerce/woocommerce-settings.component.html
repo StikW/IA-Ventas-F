@@ -33,7 +33,15 @@
         <mat-label>Consumer Secret</mat-label>
         <input matInput type="password" formControlName="consumerSecret" />
       </mat-form-field>
-      <p class="hint full">MASSI Bot API (Application Password de WordPress para WhatsApp)</p>
+      <p class="hint full">
+        MASSI Bot API (Application Password de WordPress para pedidos y catálogo del agente)
+      </p>
+      <p class="hint full">
+        OTP Mi cuenta y notificaciones de pedido por WhatsApp: en WordPress ve a
+        <strong>MASSI → API → IA Ventas / BuilderBot</strong>, elige el modo
+        <em>4. WhatsApp Automático (IA Ventas)</em> y pega la URL
+        <code>{{ apiBaseHint }}</code> más la API Key del panel Configuración.
+      </p>
       <mat-form-field appearance="outline">
         <mat-label>Usuario WP (Bot)</mat-label>
         <input matInput formControlName="botApiUser" placeholder="iaventas-bot" />

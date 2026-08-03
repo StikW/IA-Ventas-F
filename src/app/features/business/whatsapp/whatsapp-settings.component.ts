@@ -1,23 +1,28 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { WooCommerceService } from '../woocommerce/woocommerce.service';
 import { BuilderBotConfigView, BuilderBotService } from './builderbot.service';
 
 @Component({
   selector: 'app-whatsapp-settings',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatSnackBarModule],
+  imports: [DatePipe, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatSnackBarModule],
   templateUrl: './whatsapp-settings.component.html',
   styleUrl: './whatsapp-settings.component.scss',
 })
 export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
   private readonly builderBotService = inject(BuilderBotService);
+  private readonly wooCommerceService = inject(WooCommerceService);
   private readonly snackBar = inject(MatSnackBar);
 
   readonly config = signal<BuilderBotConfigView | null>(null);
+  readonly catalogUrlHint = signal<string | null>(null);
   readonly qrObjectUrl = signal<string | null>(null);
   readonly loading = signal(false);
   readonly loadingQr = signal(false);
@@ -32,6 +37,18 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadConfig();
+    this.loadCatalogUrlHint();
+  }
+
+  private loadCatalogUrlHint(): void {
+    this.wooCommerceService.getConfig().subscribe({
+      next: (res) => {
+        const storeUrl = res.data?.storeUrl?.replace(/\/$/, '');
+        if (storeUrl) {
+          this.catalogUrlHint.set(`${storeUrl}/tienda/`);
+        }
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -276,11 +293,18 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
             ? { ...current, webhookUrl: res.data.webhookUrl, updatedAt: res.data.syncedAt, webhookNeedsSync: false }
             : current
         );
-        this.snackBar.open('Webhook sincronizado con BuilderBot', 'Cerrar', { duration: 5000 });
+        const isCloudV2 = this.config()?.apiMode === 'cloud-v2';
+        this.snackBar.open(
+          isCloudV2
+            ? 'BuilderBot sincronizado (relay, flows UI y reboot). Revisa los pasos de botones abajo si aún no los configuraste en BBC.'
+            : 'Webhook sincronizado con BuilderBot',
+          'Cerrar',
+          { duration: isCloudV2 ? 9000 : 5000 }
+        );
       },
       error: (err) => {
         this.syncingWebhook.set(false);
-        this.snackBar.open(err.error?.error?.message ?? 'No se pudo sincronizar el webhook', 'Cerrar', {
+        this.snackBar.open(err.error?.error?.message ?? 'No se pudo sincronizar BuilderBot', 'Cerrar', {
           duration: 6000,
         });
       },
