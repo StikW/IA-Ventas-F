@@ -6,13 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { WooCommerceService } from '../woocommerce/woocommerce.service';
 import { BuilderBotConfigView, BuilderBotService } from './builderbot.service';
 
 @Component({
   selector: 'app-whatsapp-settings',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatSnackBarModule],
+  imports: [DatePipe, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatSnackBarModule, MatSlideToggleModule],
   templateUrl: './whatsapp-settings.component.html',
   styleUrl: './whatsapp-settings.component.scss',
 })
@@ -28,6 +29,7 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
   readonly loadingQr = signal(false);
   readonly provisioning = signal(false);
   readonly syncingWebhook = signal(false);
+  readonly togglingAgent = signal(false);
   readonly qrError = signal<string | null>(null);
   readonly popupBlocked = signal(false);
 
@@ -306,6 +308,37 @@ export class WhatsAppSettingsComponent implements OnInit, OnDestroy {
         this.syncingWebhook.set(false);
         this.snackBar.open(err.error?.error?.message ?? 'No se pudo sincronizar BuilderBot', 'Cerrar', {
           duration: 6000,
+        });
+      },
+    });
+  }
+
+  onAgentEnabledChange(enabled: boolean): void {
+    const previous = this.config()?.agentEnabled !== false;
+    this.config.update((current) => (current ? { ...current, agentEnabled: enabled } : current));
+    this.togglingAgent.set(true);
+
+    this.builderBotService.setAgentEnabled(enabled).subscribe({
+      next: (res) => {
+        this.togglingAgent.set(false);
+        this.config.update((current) =>
+          current
+            ? { ...current, agentEnabled: res.data.agentEnabled, updatedAt: res.data.updatedAt }
+            : current
+        );
+        this.snackBar.open(
+          enabled
+            ? 'Agente de ventas activado: responderá mensajes entrantes.'
+            : 'Agente desactivado: solo plantillas y mensajes salientes (OTP, estado pedido).',
+          'Cerrar',
+          { duration: 6000 }
+        );
+      },
+      error: (err) => {
+        this.togglingAgent.set(false);
+        this.config.update((current) => (current ? { ...current, agentEnabled: previous } : current));
+        this.snackBar.open(err.error?.error?.message ?? 'No se pudo cambiar el agente', 'Cerrar', {
+          duration: 5000,
         });
       },
     });

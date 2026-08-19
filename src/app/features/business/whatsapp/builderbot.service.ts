@@ -20,6 +20,8 @@ export interface BuilderBotConfigView {
   projectId?: string;
   connectUrl?: string;
   updatedAt?: string;
+  /** Agente conversacional activo (plantillas salientes no dependen de esto). */
+  agentEnabled?: boolean;
 }
 
 export interface BuilderBotQrView {
@@ -63,5 +65,12 @@ export class BuilderBotService {
 
   syncWebhook() {
     return this.http.post<ApiResponse<{ webhookUrl: string; syncedAt: string }>>(`${this.baseUrl}/sync-webhook`, {});
+  }
+
+  setAgentEnabled(enabled: boolean) {
+    return this.http.patch<ApiResponse<{ agentEnabled: boolean; updatedAt: string }>>(
+      `${this.baseUrl}/agent-enabled`,
+      { enabled }
+    );
   }
 }

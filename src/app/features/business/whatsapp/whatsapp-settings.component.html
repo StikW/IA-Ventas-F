@@ -55,6 +55,31 @@
       </mat-card>
     </div>
 
+    <mat-card class="iv-card section agent-card">
+      <mat-card-header>
+        <mat-card-title>Agente de ventas</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-slide-toggle
+          [checked]="cfg.agentEnabled !== false"
+          [disabled]="togglingAgent() || loading()"
+          (change)="onAgentEnabledChange($event.checked)"
+        >
+          {{ cfg.agentEnabled !== false ? 'Agente activo' : 'Agente desactivado' }}
+        </mat-slide-toggle>
+        <p class="hint">
+          Con el agente <strong>desactivado</strong>, los mensajes que escriban al número no generan respuesta automática
+          (carrito, catálogo, IA). El número sigue conectado para <strong>plantillas y mensajes salientes</strong>
+          (OTP, estado de pedido, notificaciones MASSI vía API).
+        </p>
+        @if (cfg.agentEnabled === false) {
+          <p class="hint agent-paused">
+            Modo solo envío: puedes usar BuilderBot Cloud para campañas/plantillas sin que el agente intervenga.
+          </p>
+        }
+      </mat-card-content>
+    </mat-card>
+
     <mat-card class="iv-card section webhook-card">
       <mat-card-header>
         <mat-card-title>Sincronización BuilderBot</mat-card-title>
@@ -203,10 +228,14 @@
     }
 
     @if (cfg.sessionStatus === 'connected') {
-      <mat-card class="iv-card success">
+      <mat-card class="iv-card" [class.success]="cfg.agentEnabled !== false" [class.warn]="cfg.agentEnabled === false">
         <mat-card-content>
-          <mat-icon>check_circle</mat-icon>
-          WhatsApp conectado. El agente puede recibir mensajes en este número.
+          <mat-icon>{{ cfg.agentEnabled !== false ? 'check_circle' : 'pause_circle' }}</mat-icon>
+          @if (cfg.agentEnabled !== false) {
+            WhatsApp conectado. El agente puede recibir y responder mensajes.
+          } @else {
+            WhatsApp conectado. Agente en pausa — solo envío de plantillas y mensajes salientes.
+          }
         </mat-card-content>
       </mat-card>
     }

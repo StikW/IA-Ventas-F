@@ -121,6 +121,20 @@
   color: #166534;
 }
 
+.agent-card mat-slide-toggle {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.agent-paused {
+  margin-top: 0.5rem;
+  color: #92400e;
+}
+
+.iv-card.warn mat-card-content {
+  color: #92400e;
+}
+
 .webhook-card .webhook-url-row {
   display: flex;
   align-items: flex-start;
