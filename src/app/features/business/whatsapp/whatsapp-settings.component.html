@@ -152,7 +152,7 @@
             </p>
             <ol class="bbc-steps">
               <li>
-                <strong>IA Ventas — Saludo Sin Carrito</strong> → CTA URL <em>Ver catálogo</em>
+                <strong>IA Ventas — Catalogo</strong> → CTA URL <em>Ver catálogo</em>
                 @if (catalogUrlHint()) {
                   → <code>{{ catalogUrlHint() }}</code>
                 } @else {
@@ -161,9 +161,14 @@
                 }
               </li>
               <li>
-                <strong>IA Ventas — Saludo Con Carrito</strong> → Reply <em>Vaciar carrito</em>
+                <strong>IA Ventas — Vaciar Carrito</strong> → Reply <em>Vaciar carrito</em>
                 (<code>massi:cart:clear</code>) y, en opciones del bloque, <em>Redirigir a flujo</em> →
-                <em>Saludo Sin Carrito</em>
+                <em>Catalogo</em>
+              </li>
+              <li>
+                <strong>IA Ventas — Finalizar Pedido</strong> → Reply <em>Finalizar pedido</em>
+                (<code>massi:cart:finalize</code>). <strong>No</strong> agregues palabras clave como
+                <em>hola</em>; el agente enruta a este flow automáticamente.
               </li>
             </ol>
             <p class="hint bbc-manual-foot">
