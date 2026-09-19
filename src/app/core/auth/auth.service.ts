@@ -37,7 +37,7 @@ export class AuthService {
       this.http.post(`${environment.apiUrl}/auth/logout`, { refreshToken }).subscribe({ error: () => undefined });
     }
     this.clearSession();
-    void this.router.navigateByUrl('/login', { replaceUrl: true });
+    void this.router.navigateByUrl('/', { replaceUrl: true });
   }
 
   getHomeRoute(): string {

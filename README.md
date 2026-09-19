@@ -1,4 +1,17 @@
-# Frontend
+# Frontend — IA Ventas
+
+Angular 19, standalone components, Angular Material, signals (auth).
+
+## UI y rutas
+
+- **Portada** `/` — landing pública; login en **modal** (`LoginDialogService`), no página `/login`
+- **Panel negocio** `/business/*` — top-nav, timeline en Inicio, layout 2 columnas en Catálogo / Tienda / WhatsApp / Ajustes
+- **Admin** `/admin/businesses` — gestión de negocios
+- Tokens y convenciones: `src/styles.scss` · `.cursor/rules/ui-atelier-nedi.mdc`
+
+Ver también [`AGENTS.md`](../AGENTS.md) § Frontend.
+
+---
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
 

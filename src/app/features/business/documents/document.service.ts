@@ -18,6 +18,13 @@ export interface DocumentItem {
   processedAt?: string;
 }
 
+export interface CatalogRefreshStats {
+  productCount: number;
+  skuCount: number;
+  packCount: number;
+  issues: Array<{ kind: string; count: number }>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class DocumentService {
   private readonly http = inject(HttpClient);
@@ -30,10 +37,18 @@ export class DocumentService {
     return this.http.get<PaginatedResponse<DocumentItem>>(this.baseUrl, { params: httpParams });
   }
 
-  upload(file: File) {
-    const form = new FormData();
-    form.append('file', file);
-    return this.http.post<{ data: DocumentItem }>(this.baseUrl, form);
+  refreshCatalog() {
+    return this.http.post<{ data: DocumentItem; catalog: CatalogRefreshStats }>(
+      `${this.baseUrl}/refresh-catalog`,
+      {}
+    );
+  }
+
+  download(id: string) {
+    return this.http.get(`${this.baseUrl}/${id}/download`, {
+      responseType: 'blob',
+      observe: 'response',
+    });
   }
 
   delete(id: string) {

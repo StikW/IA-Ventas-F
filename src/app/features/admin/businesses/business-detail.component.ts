@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { NvIconComponent } from '../../../shared/components/nv-icon/nv-icon.component';
 import { BusinessService } from '../businesses/business.service';
 import { UserService } from '../users/user.service';
 import { Business, User } from '../../../shared/models/api.models';
@@ -23,8 +24,10 @@ import { Business, User } from '../../../shared/models/api.models';
     MatFormFieldModule,
     MatInputModule,
     MatSnackBarModule,
+    NvIconComponent,
   ],
   templateUrl: './business-detail.component.html',
+  styleUrl: './business-detail.component.scss',
 })
 export class BusinessDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -36,6 +39,7 @@ export class BusinessDetailComponent implements OnInit {
   readonly business = signal<Business | null>(null);
   readonly users = signal<User[]>([]);
   readonly showUserForm = signal(false);
+  readonly hidePassword = signal(true);
 
   userColumns = ['email', 'name', 'status', 'actions'];
 

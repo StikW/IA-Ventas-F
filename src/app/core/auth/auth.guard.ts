@@ -2,7 +2,15 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 
-export const authGuard: CanActivateFn = () => {
+function loginRedirect(router: Router, returnUrl?: string) {
+  const queryParams: Record<string, string> = { login: '1' };
+  if (returnUrl && returnUrl !== '/' && !returnUrl.startsWith('/?')) {
+    queryParams['returnUrl'] = returnUrl;
+  }
+  return router.createUrlTree(['/'], { queryParams });
+}
+
+export const authGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
@@ -10,10 +18,10 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/login']);
+  return loginRedirect(router, state.url);
 };
 
-export const adminGuard: CanActivateFn = () => {
+export const adminGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
@@ -21,10 +29,10 @@ export const adminGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/login']);
+  return loginRedirect(router, state.url);
 };
 
-export const businessGuard: CanActivateFn = () => {
+export const businessGuard: CanActivateFn = (_route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
@@ -36,7 +44,7 @@ export const businessGuard: CanActivateFn = () => {
     return router.createUrlTree(['/admin']);
   }
 
-  return router.createUrlTree(['/login']);
+  return loginRedirect(router, state.url);
 };
 
 export const guestGuard: CanActivateFn = () => {

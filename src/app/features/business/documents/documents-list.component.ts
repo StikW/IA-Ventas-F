@@ -1,10 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { HttpErrorResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { DocumentService, DocumentItem } from './document.service';
@@ -14,11 +11,7 @@ import { DocumentService, DocumentItem } from './document.service';
   standalone: true,
   imports: [
     DatePipe,
-    MatTableModule,
     MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatChipsModule,
     MatSnackBarModule,
     MatProgressBarModule,
   ],
@@ -30,9 +23,9 @@ export class DocumentsListComponent implements OnInit {
   private readonly snackBar = inject(MatSnackBar);
 
   readonly documents = signal<DocumentItem[]>([]);
-  readonly uploading = signal(false);
-
-  displayedColumns = ['filename', 'status', 'vectors', 'createdAt', 'actions'];
+  readonly refreshing = signal(false);
+  readonly downloading = signal(false);
+  readonly latestDocument = computed(() => this.documents()[0] ?? null);
 
   ngOnInit(): void {
     this.load();
@@ -46,32 +39,67 @@ export class DocumentsListComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    this.uploading.set(true);
-    this.documentService.upload(file).subscribe({
+  refreshCatalog(): void {
+    this.refreshing.set(true);
+    this.documentService.refreshCatalog().subscribe({
       next: (res) => {
-        this.uploading.set(false);
+        this.refreshing.set(false);
         if (res.data.status === 'FAILED') {
           this.snackBar.open(
-            res.data.errorMessage ?? 'El archivo se subió pero falló la vectorización',
+            res.data.errorMessage ?? 'El catálogo se generó pero falló la vectorización',
             'Cerrar',
             { duration: 8000 }
           );
         } else {
-          this.snackBar.open('Documento subido y procesado', 'Cerrar', { duration: 3000 });
+          const { productCount, skuCount, packCount } = res.catalog;
+          this.snackBar.open(
+            `Catálogo actualizado: ${productCount} productos, ${skuCount} SKU` +
+              (packCount ? `, ${packCount} a granel` : ''),
+            'Cerrar',
+            { duration: 5000 }
+          );
         }
         this.load();
-        input.value = '';
       },
-      error: (err) => {
-        this.uploading.set(false);
-        this.snackBar.open(err.error?.error?.message ?? 'Error al subir', 'Cerrar', { duration: 5000 });
-        input.value = '';
+      error: (err: HttpErrorResponse) => {
+        this.refreshing.set(false);
+        this.snackBar.open(this.errorMessage(err, 'Error al actualizar el catálogo'), 'Cerrar', {
+          duration: 6000,
+        });
         this.load();
+      },
+    });
+  }
+
+  downloadLatest(): void {
+    const doc = this.latestDocument();
+    if (!doc) return;
+    this.downloadDoc(doc);
+  }
+
+  downloadDoc(doc: DocumentItem): void {
+    this.downloading.set(true);
+    this.documentService.download(doc.id).subscribe({
+      next: (response) => {
+        this.downloading.set(false);
+        const blob = response.body;
+        if (!blob) {
+          this.snackBar.open('No se pudo descargar el documento', 'Cerrar', { duration: 4000 });
+          return;
+        }
+        const filename = this.filenameFromHeader(response.headers.get('content-disposition')) ?? doc.filename;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.downloading.set(false);
+        void this.blobError(err).then((message) =>
+          this.snackBar.open(message, 'Cerrar', { duration: 5000 })
+        );
       },
     });
   }
@@ -101,5 +129,28 @@ export class DocumentsListComponent implements OnInit {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  private errorMessage(err: HttpErrorResponse, fallback: string): string {
+    const fromBody = err.error?.error?.message;
+    if (typeof fromBody === 'string' && fromBody.trim()) return fromBody;
+    return fallback;
+  }
+
+  private filenameFromHeader(header: string | null): string | null {
+    if (!header) return null;
+    const match = /filename="([^"]+)"/i.exec(header);
+    return match?.[1] ?? null;
+  }
+
+  private async blobError(err: HttpErrorResponse): Promise<string> {
+    const fallback = 'Error al descargar';
+    if (!(err.error instanceof Blob)) return this.errorMessage(err, fallback);
+    try {
+      const parsed = JSON.parse(await err.error.text()) as { error?: { message?: string } };
+      return parsed.error?.message ?? fallback;
+    } catch {
+      return fallback;
+    }
   }
 }

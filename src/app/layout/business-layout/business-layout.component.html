@@ -1,67 +1,86 @@
-<mat-sidenav-container class="layout-container">
-  <mat-sidenav mode="side" opened fixedInViewport class="sidenav">
-    <div class="sidenav-inner">
-      <div class="brand">
-        <div class="brand-logo">
-          <mat-icon>smart_toy</mat-icon>
-        </div>
-        <div>
-          <div class="brand-title">IA Ventas</div>
-          <div class="brand-subtitle">Mi negocio</div>
-        </div>
-      </div>
+<div class="app-shell">
+  <aside class="app-sidebar" aria-label="Navegación principal">
+    <a class="brand" routerLink="/business">
+      <span class="brand-mark">N</span>
+      IA Ventas
+    </a>
 
-      <div class="nav-section">
-        <div class="nav-label">Menú</div>
-        <mat-nav-list class="nav-list">
-          <a mat-list-item routerLink="/business" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <mat-icon matListItemIcon>home</mat-icon>
-            <span matListItemTitle>Inicio</span>
-          </a>
-          <a mat-list-item routerLink="/business/documents" routerLinkActive="active">
-            <mat-icon matListItemIcon>description</mat-icon>
-            <span matListItemTitle>Documentos</span>
-          </a>
-      <a mat-list-item routerLink="/business/woocommerce" routerLinkActive="active">
-        <mat-icon matListItemIcon>shopping_cart</mat-icon>
-        <span matListItemTitle>WooCommerce</span>
+    <nav class="sidebar-nav">
+      <a routerLink="/business" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <nv-icon name="home" [size]="20" />
+        Inicio
       </a>
-      <a mat-list-item routerLink="/business/whatsapp" routerLinkActive="active">
-        <mat-icon matListItemIcon>chat</mat-icon>
-        <span matListItemTitle>WhatsApp</span>
+      <a routerLink="/business/documents" routerLinkActive="active">
+        <nv-icon name="catalog" [size]="20" />
+        Catálogo
       </a>
-          <a mat-list-item routerLink="/business/orders" routerLinkActive="active">
-            <mat-icon matListItemIcon>receipt_long</mat-icon>
-            <span matListItemTitle>Pedidos</span>
-          </a>
-          <a mat-list-item routerLink="/business/settings" routerLinkActive="active">
-            <mat-icon matListItemIcon>settings</mat-icon>
-            <span matListItemTitle>Configuración</span>
-          </a>
-        </mat-nav-list>
-      </div>
+      <a routerLink="/business/woocommerce" routerLinkActive="active">
+        <nv-icon name="store" [size]="20" />
+        Tienda
+      </a>
+      <a routerLink="/business/whatsapp" routerLinkActive="active" class="whatsapp-link">
+        <nv-icon name="whatsapp" [size]="20" />
+        WhatsApp
+      </a>
+      <a routerLink="/business/settings" routerLinkActive="active">
+        <nv-icon name="settings" [size]="20" />
+        Ajustes
+      </a>
+    </nav>
 
-      <div class="sidenav-footer">
-        <mat-icon>info</mat-icon>
-        <span>BuilderBot + RAG</span>
+    <div class="sidebar-foot">
+      <div class="sidebar-user">
+        <span class="user-avatar">{{ userInitials() }}</span>
+        <span class="user-name">{{ userLabel() }}</span>
       </div>
+      <button class="sidebar-logout" type="button" (click)="logout()">
+        <nv-icon name="logout" [size]="18" />
+        Cerrar sesión
+      </button>
     </div>
-  </mat-sidenav>
+  </aside>
 
-  <mat-sidenav-content>
-    <mat-toolbar color="primary" class="top-toolbar">
-      <span class="toolbar-title">Panel del Negocio</span>
-      <span class="spacer"></span>
-      @if (auth.currentUser(); as user) {
-        <span class="user-chip">
-          <span class="user-avatar">{{ user.profile.firstName.charAt(0) }}</span>
-          {{ user.profile.firstName }}
-        </span>
-      }
-      <button mat-stroked-button class="logout-btn" (click)="logout()">Salir</button>
-    </mat-toolbar>
-    <main class="content">
-      <router-outlet />
+  <div class="app-body">
+    <header class="mobile-header">
+      <a class="brand" routerLink="/business">
+        <span class="brand-mark">N</span>
+        IA Ventas
+      </a>
+      <div class="mobile-header-end">
+        <span class="user-avatar" [attr.title]="userLabel()">{{ userInitials() }}</span>
+        <button class="btn-logout" type="button" (click)="logout()" aria-label="Cerrar sesión">
+          <nv-icon name="logout" [size]="18" />
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="app-main-inner">
+        <router-outlet />
+      </div>
     </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>
+
+<nav class="bottom-nav" aria-label="Acceso rápido">
+  <a routerLink="/business" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <nv-icon name="home" [size]="22" />
+    Inicio
+  </a>
+  <a routerLink="/business/documents" routerLinkActive="active">
+    <nv-icon name="catalog" [size]="22" />
+    Catálogo
+  </a>
+  <a routerLink="/business/woocommerce" routerLinkActive="active">
+    <nv-icon name="store" [size]="22" />
+    Tienda
+  </a>
+  <a routerLink="/business/whatsapp" routerLinkActive="active" class="whatsapp-tab">
+    <nv-icon name="whatsapp" [size]="22" />
+    WhatsApp
+  </a>
+  <a routerLink="/business/settings" routerLinkActive="active">
+    <nv-icon name="settings" [size]="22" />
+    Ajustes
+  </a>
+</nav>

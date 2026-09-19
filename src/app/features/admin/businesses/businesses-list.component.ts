@@ -2,13 +2,12 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+import { NvIconComponent } from '../../../shared/components/nv-icon/nv-icon.component';
 import { BusinessService } from './business.service';
 import { Business } from '../../../shared/models/api.models';
 
@@ -26,11 +25,10 @@ function passwordMatch(group: AbstractControl) {
     RouterLink,
     MatTableModule,
     MatButtonModule,
-    MatIconModule,
+    NvIconComponent,
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatDividerModule,
     MatSnackBarModule,
   ],
   templateUrl: './businesses-list.component.html',
@@ -45,6 +43,8 @@ export class BusinessesListComponent implements OnInit {
   readonly loading = signal(false);
   readonly deletingId = signal<string | null>(null);
   readonly showForm = signal(false);
+  readonly hideOwnerPassword = signal(true);
+  readonly hideOwnerConfirm = signal(true);
 
   displayedColumns = ['name', 'slug', 'status', 'contactEmail', 'actions'];
 

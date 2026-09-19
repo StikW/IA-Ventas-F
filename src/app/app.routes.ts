@@ -4,10 +4,15 @@ import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.compone
 import { BusinessLayoutComponent } from './layout/business-layout/business-layout.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: '',
+    loadComponent: () => import('./features/public/home/home.component').then((m) => m.PublicHomeComponent),
+    canActivate: [guestGuard],
+  },
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+    loadComponent: () =>
+      import('./features/auth/login/login-redirect.component').then((m) => m.LoginRedirectComponent),
     canActivate: [guestGuard],
   },
   {
@@ -15,11 +20,7 @@ export const routes: Routes = [
     component: AdminLayoutComponent,
     canActivate: [authGuard, adminGuard],
     children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./features/admin/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent),
-      },
+      { path: '', redirectTo: 'businesses', pathMatch: 'full' },
       {
         path: 'businesses',
         loadComponent: () =>
@@ -64,12 +65,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/business/whatsapp/whatsapp-settings.component').then((m) => m.WhatsAppSettingsComponent),
       },
-      {
-        path: 'orders',
-        loadComponent: () =>
-          import('./features/business/orders/orders-list.component').then((m) => m.OrdersListComponent),
-      },
     ],
   },
-  { path: '**', redirectTo: 'login' },
+  { path: '**', redirectTo: '' },
 ];

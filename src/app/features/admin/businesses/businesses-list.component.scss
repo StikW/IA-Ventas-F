@@ -1,22 +1,35 @@
-.form-card {
-  margin-bottom: 1.5rem;
+.hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  animation: nv-fade-up 0.4s var(--nv-ease-out) both;
 }
 
-.form-card mat-divider {
-  margin: 1.25rem 0;
+.form-panel {
+  margin-bottom: 1rem;
+  animation: nv-fade-up 0.4s var(--nv-ease-out) 0.1s both;
 }
 
-.form-actions {
-  margin-top: 1rem;
+.table-wrap {
+  overflow-x: auto;
+  border-radius: var(--nv-radius);
+  animation: nv-fade-up 0.4s var(--nv-ease-out) 0.15s both;
 }
 
-.full-width {
-  width: 100%;
+.row-actions {
+  display: flex;
+  gap: 0.375rem;
+  justify-content: flex-end;
 }
 
-code {
-  background: #f1f5f9;
-  padding: 0.15rem 0.45rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
+@media (max-width: 700px) {
+  .hero-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .row-actions {
+    flex-wrap: wrap;
+  }
 }

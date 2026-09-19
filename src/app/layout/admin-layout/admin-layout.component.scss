@@ -1,3 +1,17 @@
-@use '../shell' as shell;
+@use '../shell';
 
-@include shell.layout-shell;
+:host {
+  @include shell.layout-shell;
+
+  .admin-tag {
+    margin-left: 0.35rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--nv-radius-pill);
+    background: var(--nv-surface-sunken);
+    color: var(--nv-muted);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}

@@ -1,19 +1,17 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { NvIconComponent } from '../../../shared/components/nv-icon/nv-icon.component';
 import { WooCommerceService } from '../woocommerce/woocommerce.service';
 import { BuilderBotConfigView, BuilderBotService } from './builderbot.service';
 
 @Component({
   selector: 'app-whatsapp-settings',
   standalone: true,
-  imports: [DatePipe, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatSnackBarModule, MatSlideToggleModule],
+  imports: [MatCardModule, MatButtonModule, NvIconComponent, MatProgressBarModule, MatSnackBarModule, MatSlideToggleModule],
   templateUrl: './whatsapp-settings.component.html',
   styleUrl: './whatsapp-settings.component.scss',
 })

@@ -1,15 +1,11 @@
-<h1>Dashboard</h1>
-<p class="subtitle">Resumen del panel de administración</p>
-
-<div class="nav-cards">
-  <mat-card class="iv-card nav-card">
-    <mat-card-header>
-      <mat-icon mat-card-avatar>store</mat-icon>
-      <mat-card-title>Negocios</mat-card-title>
-      <mat-card-subtitle>Crea tenants, usuarios de acceso y gestiona estados.</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-actions>
-      <a mat-flat-button color="primary" routerLink="/admin/businesses">Ir a negocios</a>
-    </mat-card-actions>
-  </mat-card>
+<div class="page-header">
+  <div>
+    <h1>Inicio</h1>
+  </div>
+  <a mat-flat-button color="primary" routerLink="/admin/businesses">Negocios</a>
 </div>
+
+<a class="iv-card nav-card" routerLink="/admin/businesses">
+  <h2>Negocios</h2>
+  <p>Crear, activar o desactivar tenants.</p>
+</a>

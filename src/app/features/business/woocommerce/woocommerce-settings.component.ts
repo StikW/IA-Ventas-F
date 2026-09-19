@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { environment } from '../../../../environments/environment';
+import { NvIconComponent } from '../../../shared/components/nv-icon/nv-icon.component';
 import { WooCommerceService, WooCommerceProduct } from './woocommerce.service';
 
 @Component({
@@ -22,6 +23,7 @@ import { WooCommerceService, WooCommerceProduct } from './woocommerce.service';
     MatTableModule,
     MatSnackBarModule,
     MatProgressBarModule,
+    NvIconComponent,
   ],
   templateUrl: './woocommerce-settings.component.html',
   styleUrl: './woocommerce-settings.component.scss',
@@ -38,6 +40,8 @@ export class WooCommerceSettingsComponent implements OnInit {
   readonly botApiConnected = signal(false);
   readonly hasCredentials = signal(false);
   readonly hasBotApiCredentials = signal(false);
+  readonly hideConsumerSecret = signal(true);
+  readonly hideBotPassword = signal(true);
 
   productColumns = ['name', 'sku', 'price', 'stock'];
   readonly apiBaseHint = environment.apiUrl;

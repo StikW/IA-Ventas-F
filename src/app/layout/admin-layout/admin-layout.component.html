@@ -1,51 +1,69 @@
-<mat-sidenav-container class="layout-container">
-  <mat-sidenav mode="side" opened fixedInViewport class="sidenav">
-    <div class="sidenav-inner">
-      <div class="brand">
-        <div class="brand-logo">
-          <mat-icon>smart_toy</mat-icon>
-        </div>
-        <div>
-          <div class="brand-title">IA Ventas</div>
-          <div class="brand-subtitle">Administración</div>
-        </div>
-      </div>
+<div class="app-shell">
+  <aside class="app-sidebar" aria-label="Navegación admin">
+    <a class="brand" routerLink="/admin/businesses">
+      <span class="brand-mark">N</span>
+      IA Ventas
+      <span class="admin-tag">Admin</span>
+    </a>
 
-      <div class="nav-section">
-        <div class="nav-label">Menú</div>
-        <mat-nav-list class="nav-list">
-          <a mat-list-item routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-            <mat-icon matListItemIcon>dashboard</mat-icon>
-            <span matListItemTitle>Dashboard</span>
-          </a>
-          <a mat-list-item routerLink="/admin/businesses" routerLinkActive="active">
-            <mat-icon matListItemIcon>store</mat-icon>
-            <span matListItemTitle>Negocios</span>
-          </a>
-        </mat-nav-list>
-      </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/businesses" routerLinkActive="active">
+        <nv-icon name="businesses" [size]="20" />
+        Negocios
+      </a>
+    </nav>
 
-      <div class="sidenav-footer">
-        <mat-icon>admin_panel_settings</mat-icon>
-        <span>Panel global</span>
+    <div class="sidebar-foot">
+      <div class="sidebar-user">
+        <span class="user-avatar">{{ userInitials() }}</span>
+        <span class="user-name">{{ userLabel() }}</span>
       </div>
+      <button class="sidebar-logout" type="button" (click)="logout()">
+        <nv-icon name="logout" [size]="18" />
+        Cerrar sesión
+      </button>
     </div>
-  </mat-sidenav>
+  </aside>
 
-  <mat-sidenav-content>
-    <mat-toolbar color="primary" class="top-toolbar">
-      <span class="toolbar-title">Panel Administrador</span>
-      <span class="spacer"></span>
-      @if (auth.currentUser(); as user) {
-        <span class="user-chip">
-          <span class="user-avatar">{{ user.profile.firstName.charAt(0) }}{{ user.profile.lastName.charAt(0) }}</span>
-          {{ user.profile.firstName }} {{ user.profile.lastName }}
-        </span>
-      }
-      <button mat-stroked-button class="logout-btn" (click)="logout()">Salir</button>
-    </mat-toolbar>
-    <main class="content">
-      <router-outlet />
+  <div class="app-body">
+    <header class="mobile-header">
+      <a class="brand" routerLink="/admin/businesses">
+        <span class="brand-mark">N</span>
+        IA Ventas
+        <span class="admin-tag">Admin</span>
+      </a>
+      <div class="mobile-header-end">
+        <span class="user-avatar" [attr.title]="userLabel()">{{ userInitials() }}</span>
+        <button class="menu-toggle" type="button" (click)="toggleMenu()" aria-label="Menú">
+          <nv-icon [name]="menuToggleIcon()" [size]="20" />
+        </button>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="app-main-inner">
+        <router-outlet />
+      </div>
     </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>
+
+@if (menuOpen()) {
+  <div class="mobile-nav-backdrop" (click)="closeMenu()" aria-hidden="true"></div>
+  <nav class="mobile-nav" aria-label="Menú móvil">
+    <div class="mobile-nav-head">
+      <span class="brand-mark">N</span>
+      <button class="btn-logout" type="button" (click)="closeMenu()" aria-label="Cerrar">
+        <nv-icon name="close" [size]="18" />
+      </button>
+    </div>
+    <a routerLink="/admin/businesses" routerLinkActive="active">
+      <nv-icon name="businesses" [size]="20" /> Negocios
+    </a>
+    <div class="mobile-nav-foot">
+      <button class="mobile-logout" type="button" (click)="logout()">
+        <nv-icon name="logout" [size]="20" /> Cerrar sesión
+      </button>
+    </div>
+  </nav>
+}

@@ -1,11 +1,5 @@
-@use '../shell' as shell;
+@use '../shell';
 
-@include shell.layout-shell;
-
-.sidenav {
-  background: linear-gradient(180deg, #1e1b4b 0%, #172554 55%, #0f172a 100%);
-}
-
-.brand-subtitle {
-  color: #a5b4fc;
+:host {
+  @include shell.layout-shell;
 }

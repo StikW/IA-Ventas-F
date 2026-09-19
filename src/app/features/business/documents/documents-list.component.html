@@ -1,56 +1,60 @@
-<div class="header">
-  <div>
-    <h1>Documentos de productos</h1>
-    <p class="subtitle">Sube PDF, DOCX o TXT con información de productos. El agente en BuilderBot consultará este conocimiento vía RAG.</p>
-  </div>
-  <label class="upload-btn">
-    <input type="file" accept=".pdf,.docx,.txt" (change)="onFileSelected($event)" hidden />
-    <span mat-flat-button>Subir documento</span>
-  </label>
+<div class="page-hero">
+  <h1>Catálogo IA</h1>
+  <p class="page-lead">Documento vectorizado que permite al agente interpretar pedidos en lenguaje natural.</p>
 </div>
 
-@if (uploading()) {
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-}
+<div class="page-grid">
+  <section class="page-main">
+    @if (refreshing()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p class="hint progress-note">Generando desde WooCommerce…</p>
+    }
 
-<mat-card>
-  <table mat-table [dataSource]="documents()" class="full-width">
-    <ng-container matColumnDef="filename">
-      <th mat-header-cell *matHeaderCellDef>Archivo</th>
-      <td mat-cell *matCellDef="let row">{{ row.filename }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Estado</th>
-      <td mat-cell *matCellDef="let row">
-        <span [class.ready]="row.status === 'READY'" [class.failed]="row.status === 'FAILED'">{{ row.status }}</span>
-        @if (row.status === 'FAILED' && row.errorMessage) {
-          <div class="error-msg">{{ row.errorMessage }}</div>
+    @if (latestDocument(); as doc) {
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>{{ doc.filename }}</h3>
+            <p>{{ doc.createdAt | date: 'medium' }} · {{ doc.vectorCount }} vectores</p>
+          </div>
+          <span class="status-badge" [class.ready]="doc.status === 'READY'" [class.failed]="doc.status === 'FAILED'" [class.pending]="doc.status !== 'READY' && doc.status !== 'FAILED'">
+            {{ doc.status }}
+          </span>
+        </div>
+        @if (doc.status === 'FAILED' && doc.errorMessage) {
+          <p class="error-msg">{{ doc.errorMessage }}</p>
         }
-      </td>
-    </ng-container>
+        <div class="actions">
+          <button mat-flat-button color="primary" type="button" (click)="refreshCatalog()" [disabled]="refreshing()">
+            Actualizar
+          </button>
+          <button mat-stroked-button type="button" (click)="downloadLatest()" [disabled]="!latestDocument() || refreshing() || downloading()">
+            Descargar .txt
+          </button>
+          @if (doc.status === 'FAILED') {
+            <button mat-stroked-button type="button" (click)="reprocess(doc)" [disabled]="refreshing()">Reprocesar</button>
+          }
+          <button mat-stroked-button color="warn" type="button" (click)="deleteDoc(doc)" [disabled]="refreshing()">Eliminar</button>
+        </div>
+      </div>
+    } @else if (!refreshing()) {
+      <div class="panel empty-panel">
+        <h3>Sin catálogo generado</h3>
+        <p class="hint">Necesitas WooCommerce conectado. El catálogo se crea automáticamente desde tus productos.</p>
+        <button mat-flat-button color="primary" type="button" (click)="refreshCatalog()">Generar catálogo</button>
+      </div>
+    }
+  </section>
 
-    <ng-container matColumnDef="vectors">
-      <th mat-header-cell *matHeaderCellDef>Vectores</th>
-      <td mat-cell *matCellDef="let row">{{ row.vectorCount }} / {{ row.chunkCount }} chunks</td>
-    </ng-container>
-
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef>Fecha</th>
-      <td mat-cell *matCellDef="let row">{{ row.createdAt | date : 'short' }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Acciones</th>
-      <td mat-cell *matCellDef="let row">
-        @if (row.status === 'FAILED') {
-          <button mat-button (click)="reprocess(row)">Reprocesar</button>
-        }
-        <button mat-button color="warn" (click)="deleteDoc(row)">Eliminar</button>
-      </td>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-</mat-card>
+  <aside class="page-aside">
+    <div class="panel aside-panel">
+      <h3>Qué hace</h3>
+      <ul>
+        <li>Lee todos los productos de WooCommerce</li>
+        <li>Genera un archivo .txt estructurado</li>
+        <li>Lo vectoriza para búsqueda semántica</li>
+      </ul>
+      <p class="hint">Regenera cuando cambies SKUs o agregues productos.</p>
+    </div>
+  </aside>
+</div>

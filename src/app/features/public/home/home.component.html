@@ -1,0 +1,191 @@
+<div class="landing">
+  <div class="landing-bg" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-pattern"></div>
+  </div>
+
+  <header class="landing-header">
+    <div class="landing-header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">N</span>
+        IA Ventas
+      </a>
+      <button type="button" class="btn-primary" (click)="openLogin()">Acceder al panel</button>
+    </div>
+  </header>
+
+  <section class="intro">
+    <div class="intro-copy">
+      <p class="kicker nv-animate-in">
+        <span class="kicker-dot"></span>
+        Plataforma de ventas conversacionales
+      </p>
+      <h1 class="nv-animate-in nv-animate-in-delay-1">
+        Tu catálogo responde, cotiza y cierra pedidos por WhatsApp.
+      </h1>
+      <p class="intro-text nv-animate-in nv-animate-in-delay-2">
+        Conecta WooCommerce, entrena al agente con tu inventario y deja que tus clientes compren
+        escribiendo como lo harían en la tienda física.
+      </p>
+      <div class="intro-actions nv-animate-in nv-animate-in-delay-3">
+        <button type="button" class="btn-primary lg" (click)="openLogin()">
+          <span>Comenzar ahora</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <a href="#como-funciona" class="btn-ghost lg">Ver cómo funciona</a>
+      </div>
+      <ul class="intro-stats nv-animate-in nv-animate-in-delay-4">
+        <li>
+          <strong>24/7</strong>
+          <span>Atención automática</span>
+        </li>
+        <li>
+          <strong>RAG</strong>
+          <span>Lenguaje natural</span>
+        </li>
+        <li>
+          <strong>WC</strong>
+          <span>Stock y precio real</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="intro-visual nv-animate-in nv-animate-in-delay-2">
+      <div class="dashboard-preview">
+        <div class="preview-glow"></div>
+        <div class="preview-toolbar">
+          <span></span><span></span><span></span>
+          <p>Panel · Configuración del agente</p>
+        </div>
+        <div class="preview-body">
+          <div class="preview-step done">
+            <span class="step-icon">✓</span>
+            <div>
+              <strong>Tienda conectada</strong>
+              <p>tu-tienda.com</p>
+            </div>
+            <span class="chip ok">Activa</span>
+          </div>
+          <div class="preview-step done">
+            <span class="step-icon">✓</span>
+            <div>
+              <strong>Catálogo vectorizado</strong>
+              <p>Productos indexados · listo para buscar</p>
+            </div>
+            <span class="chip ok">Listo</span>
+          </div>
+          <div class="preview-step active">
+            <span class="step-icon pulse">3</span>
+            <div>
+              <strong>WhatsApp vinculado</strong>
+              <p>Número de tu negocio</p>
+            </div>
+            <span class="chip live">En línea</span>
+          </div>
+        </div>
+      </div>
+      <div class="chat-preview">
+        <div class="chat-header">
+          <span class="chat-avatar">IA</span>
+          <div>
+            <p class="chat-name">Agente de ventas</p>
+            <p class="chat-status">En línea</p>
+          </div>
+        </div>
+        <div class="chat-messages">
+          <div class="chat-line client chat-msg-1">¿Tienen el producto en talla M?</div>
+          <div class="chat-line agent chat-msg-2">Te muestro 3 opciones con ID para que elijas.</div>
+          <div class="chat-line client chat-msg-3">Quiero la opción A, dos unidades</div>
+          <div class="chat-line agent highlight chat-msg-4">Agregado. Te envío el link para finalizar.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="como-funciona">
+    <div class="features-head nv-reveal">
+      <span class="section-tag">Proceso simple</span>
+      <h2>Tres pasos. Sin fricción.</h2>
+      <p>Todo lo que necesitas para poner el agente a vender está en un solo panel.</p>
+    </div>
+
+    <div class="feature-row nv-reveal">
+      <div class="feature-media store">
+        <div class="feature-ui">
+          <span class="ui-label">WooCommerce</span>
+          <div class="ui-field"></div>
+          <div class="ui-field short"></div>
+          <div class="ui-btn"></div>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <span class="feature-num">01</span>
+        <h3>Conecta tu tienda</h3>
+        <p>Las credenciales de WooCommerce alimentan stock, precios y checkout. Una sola fuente de verdad.</p>
+      </div>
+    </div>
+
+    <div class="feature-row reverse nv-reveal">
+      <div class="feature-media catalog">
+        <div class="feature-ui">
+          <span class="ui-label">Catálogo IA</span>
+          <div class="ui-progress"><span class="progress-fill"></span></div>
+          <p class="ui-meta">Generando embeddings…</p>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <span class="feature-num">02</span>
+        <h3>Genera el catálogo inteligente</h3>
+        <p>Un clic crea el documento que el agente usa para interpretar pedidos en lenguaje natural.</p>
+      </div>
+    </div>
+
+    <div class="feature-row nv-reveal">
+      <div class="feature-media whatsapp">
+        <div class="feature-ui qr">
+          <div class="qr-box">
+            <div class="qr-scan-line"></div>
+          </div>
+          <p class="ui-meta">Escanea y listo</p>
+        </div>
+      </div>
+      <div class="feature-copy">
+        <span class="feature-num">03</span>
+        <h3>Activa WhatsApp</h3>
+        <p>Vincula el número, activa el agente y empieza a recibir pedidos con carrito y link de pago.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-band nv-reveal">
+    <div class="stat-item">
+      <strong>98%</strong>
+      <span>Consultas resueltas sin intervención</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <strong>&lt;3s</strong>
+      <span>Tiempo de respuesta promedio</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <strong>24/7</strong>
+      <span>Disponibilidad del agente</span>
+    </div>
+  </section>
+
+  <section class="closing nv-reveal">
+    <div class="closing-inner">
+      <div class="closing-glow" aria-hidden="true"></div>
+      <h2>Listo para automatizar tus ventas</h2>
+      <p>Configura tu agente en minutos y empieza a vender por WhatsApp hoy.</p>
+      <button type="button" class="btn-primary lg" (click)="openLogin()">Acceder al panel</button>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <span>© IA Ventas · Nedi</span>
+  </footer>
+</div>

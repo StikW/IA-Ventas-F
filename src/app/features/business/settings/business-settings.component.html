@@ -1,10 +1,16 @@
-<h1>Configuración del negocio</h1>
+<div class="page-hero">
+  <h1>Ajustes</h1>
+  <p class="page-lead">Perfil del negocio y credenciales de integración con la plataforma.</p>
+</div>
 
-<mat-card class="section">
-  <mat-card-header>
-    <mat-card-title>Perfil</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
+<div class="settings-content">
+  <section class="panel" id="perfil">
+    <div class="panel-header">
+      <div>
+        <h3>Perfil del negocio</h3>
+        <p>Información que el agente comparte en WhatsApp.</p>
+      </div>
+    </div>
     <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
       <mat-form-field appearance="outline" class="full">
         <mat-label>Descripción</mat-label>
@@ -19,61 +25,49 @@
         <input matInput formControlName="businessHours" />
       </mat-form-field>
       <mat-form-field appearance="outline" class="full">
-        <mat-label>Datos bancarios (transferencias)</mat-label>
+        <mat-label>Datos bancarios</mat-label>
         <textarea matInput rows="2" formControlName="bankAccountInfo"></textarea>
       </mat-form-field>
       <mat-form-field appearance="outline" class="full">
-        <mat-label>URL formulario de compra (opcional)</mat-label>
-        <input matInput formControlName="checkoutFormUrl" placeholder="https://tutienda.com/finalizar-compra/" />
-        <mat-hint>Si está vacío, se usa la página checkout de WC (ej. /finalizar-compra/). Detectada al probar conexión WooCommerce.</mat-hint>
+        <mat-label>URL de checkout</mat-label>
+        <input matInput formControlName="checkoutFormUrl" />
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Modo cierre de compra</mat-label>
+        <mat-label>Cierre de compra</mat-label>
         <select matNativeControl formControlName="checkoutMode">
-          <option value="link">Enlace al formulario WC (recomendado)</option>
-          <option value="whatsapp">Botones de pago en WhatsApp (legacy)</option>
+          <option value="link">Link de WooCommerce</option>
+          <option value="whatsapp">Pago en WhatsApp</option>
         </select>
       </mat-form-field>
-      <button mat-flat-button color="primary" type="submit">Guardar</button>
+      <button mat-flat-button color="primary" type="submit">Guardar cambios</button>
     </form>
-  </mat-card-content>
-</mat-card>
+  </section>
 
-<mat-card class="section">
-  <mat-card-header>
-    <mat-card-title>API Key para BuilderBot</mat-card-title>
-    <mat-card-subtitle>
-      BuilderBot usa esta clave para consultar conocimiento de productos (RAG) y operaciones del negocio.
-    </mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
+  <section class="panel" id="api-key">
+    <div class="panel-header">
+      <div>
+        <h3>API Key de plataforma</h3>
+        <p>Para integraciones externas: OTP, notificaciones y RAG.</p>
+      </div>
+    </div>
     @if (apiKeyPrefix()) {
-      <p>Prefijo activo: <code>{{ apiKeyPrefix() }}</code></p>
+      <p class="key-row">Prefijo activo: <code>{{ apiKeyPrefix() }}</code></p>
     } @else {
-      <p>No hay API Key activa.</p>
+      <p class="hint">No hay clave activa.</p>
     }
-
     @if (generatedApiKey()) {
-      <div class="api-key-box">
-        <strong>Copia esta clave ahora:</strong>
+      <div class="api-key-reveal">
+        <span class="reveal-label">Copia esta clave — solo se muestra una vez</span>
         <code>{{ generatedApiKey() }}</code>
       </div>
     }
-
-    <button mat-stroked-button color="primary" type="button" (click)="regenerateApiKey()">
-      {{ apiKeyPrefix() ? 'Regenerar API Key' : 'Generar API Key' }}
+    <button mat-stroked-button type="button" (click)="regenerateApiKey()">
+      {{ apiKeyPrefix() ? 'Regenerar clave' : 'Generar clave' }}
     </button>
-  </mat-card-content>
-</mat-card>
-
-<mat-card class="section">
-  <mat-card-header>
-    <mat-card-title>Integración BuilderBot</mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <p>Endpoint RAG (desde BuilderBot):</p>
-    <code>POST {{ ragSearchUrl }}</code>
-    <p>Header: <code>X-API-Key: &lt;tu-api-key&gt;</code></p>
-    <p>Body: <code>{{ '{' }}"query": "¿Qué productos tienen?"{{ '}' }}</code></p>
-  </mat-card-content>
-</mat-card>
+    <details class="nv-details">
+      <summary>Endpoint RAG</summary>
+      <p><code>POST {{ ragSearchUrl }}</code></p>
+      <p class="hint">Header: <code>X-API-Key</code></p>
+    </details>
+  </section>
+</div>

@@ -1,14 +1,17 @@
-.subtitle {
-  color: var(--iv-muted);
-  margin: -0.75rem 0 1.5rem;
+.nav-card {
+  display: block;
+  padding: 1.25rem 1.3rem;
+  text-decoration: none;
+  color: inherit;
 }
 
-.nav-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+.nav-card h2 {
+  margin: 0;
+  font-family: var(--nv-font-display);
+  font-size: 1.5rem;
 }
 
-.nav-card mat-card-header {
-  margin-bottom: 0.5rem;
+.nav-card p {
+  margin: 0.35rem 0 0;
+  color: var(--nv-muted);
 }
