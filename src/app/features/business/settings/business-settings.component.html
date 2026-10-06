@@ -1,17 +1,36 @@
 <div class="page-hero">
   <h1>Ajustes</h1>
-  <p class="page-lead">Perfil del negocio y credenciales de integración con la plataforma.</p>
+  <p class="page-lead">Nombre, contacto y lo que el agente cuenta en el saludo de WhatsApp.</p>
 </div>
 
 <div class="settings-content">
   <section class="panel" id="perfil">
     <div class="panel-header">
       <div>
-        <h3>Perfil del negocio</h3>
-        <p>Información que el agente comparte en WhatsApp.</p>
+        <h3>Información del negocio</h3>
+        <p>El nombre es el que aparece en el saludo: «Qué gusto tenerte en …».</p>
       </div>
     </div>
     <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>Nombre del negocio</mat-label>
+        <input matInput formControlName="name" />
+        <mat-hint>Así te saluda el agente en WhatsApp</mat-hint>
+        @if (form.controls.name.touched && form.controls.name.invalid) {
+          <mat-error>Escribe al menos 2 caracteres</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Correo de contacto</mat-label>
+        <input matInput type="email" formControlName="contactEmail" />
+        @if (form.controls.contactEmail.touched && form.controls.contactEmail.invalid) {
+          <mat-error>Correo no válido</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Teléfono</mat-label>
+        <input matInput type="tel" formControlName="contactPhone" />
+      </mat-form-field>
       <mat-form-field appearance="outline" class="full">
         <mat-label>Descripción</mat-label>
         <textarea matInput rows="3" formControlName="description"></textarea>
@@ -39,7 +58,9 @@
           <option value="whatsapp">Pago en WhatsApp</option>
         </select>
       </mat-form-field>
-      <button mat-flat-button color="primary" type="submit">Guardar cambios</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
     </form>
   </section>
 

@@ -3,18 +3,29 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { ApiResponse } from '../../../shared/models/api.models';
 
+export interface BusinessProfile {
+  description?: string;
+  address?: string;
+  businessHours?: string;
+  bankAccountInfo?: string;
+  checkoutFormUrl?: string;
+  checkoutMode?: 'link' | 'whatsapp';
+}
+
 export interface BusinessConfig {
   tenantId: string;
-  business: {
-    description?: string;
-    address?: string;
-    businessHours?: string;
-    bankAccountInfo?: string;
-    checkoutFormUrl?: string;
-    checkoutMode?: 'link' | 'whatsapp';
-  };
+  name: string;
+  contactEmail: string;
+  contactPhone: string;
+  business: BusinessProfile;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface BusinessSettingsPayload extends BusinessProfile {
+  name: string;
+  contactEmail: string;
+  contactPhone: string;
 }
 
 export interface ApiKeyInfo {
@@ -37,8 +48,8 @@ export class ConfigService {
     return this.http.get<ApiResponse<BusinessConfig>>(this.baseUrl);
   }
 
-  updateBusiness(business: BusinessConfig['business']) {
-    return this.http.put<ApiResponse<BusinessConfig>>(`${this.baseUrl}/business`, business);
+  updateBusiness(payload: BusinessSettingsPayload) {
+    return this.http.put<ApiResponse<BusinessConfig>>(`${this.baseUrl}/business`, payload);
   }
 
   getApiKeyInfo() {

@@ -4,10 +4,11 @@ Angular 19, standalone components, Angular Material, signals (auth).
 
 ## UI y rutas
 
-- **Portada** `/` — landing pública; login en **modal** (`LoginDialogService`), no página `/login`
-- **Panel negocio** `/business/*` — top-nav, timeline en Inicio, layout 2 columnas en Catálogo / Tienda / WhatsApp / Ajustes
-- **Admin** `/admin/businesses` — gestión de negocios
+- **Portada** `/` — landing pública (hero, features, scroll reveal); login en **modal** (`LoginDialogService`), no página `/login`
+- **Panel negocio** `/business/*` — **sidebar** en desktop; **bottom nav** + header con logout en móvil; timeline en Inicio; layout 2 columnas en Catálogo / Tienda / WhatsApp; Ajustes en 2 columnas en pantallas anchas
+- **Admin** `/admin/businesses` — sidebar en desktop; drawer en móvil
 - Tokens y convenciones: `src/styles.scss` · `.cursor/rules/ui-atelier-nedi.mdc`
+- Layout compartido: `src/app/layout/_shell.scss` · `business-layout/` · `admin-layout/`
 
 Ver también [`AGENTS.md`](../AGENTS.md) § Frontend.
 
